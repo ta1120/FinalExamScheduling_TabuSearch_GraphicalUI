@@ -44,3 +44,5 @@ R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\F
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.CopyComplete
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.exe
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.pdb
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.MainForm.resources
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.GenerateResource.cache

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 
 namespace FinalExamScheduling
 {
@@ -12,11 +13,23 @@ namespace FinalExamScheduling
     {
         static TabuSearchScheduler scheduler;
 
+        public static Application WinApp { get; private set; }
+        public static Window MainWindow { get; private set; }
+
+        static void InitializeWindows()
+        {
+            WinApp = new Application();
+            WinApp.Run(MainWindow = new MainWindow());
+        }
+
+        [STAThread]
         static void Main(string[] args)
         {
-            RunTabuSearch();
+            //RunTabuSearch();
+            InitializeWindows();
 
-            Console.WriteLine("\nPress any key to exit...");
+
+            Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
             System.Environment.Exit(0);
 

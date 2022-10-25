@@ -44,3 +44,8 @@ R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\F
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.CopyComplete
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.exe
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.pdb
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\MainWindow.g.cs
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI_MarkupCompile.cache
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI_MarkupCompile.lref
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\MainWindow.baml
+R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.g.resources

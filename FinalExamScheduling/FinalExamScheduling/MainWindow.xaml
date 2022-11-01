@@ -5,8 +5,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FinalExamScheduling"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             Width="1300" Height="800"
+             d:DesignHeight="800" d:DesignWidth="1300"
+             Title="TabuSearh Algorithm - FinalExam_Scheduling">
     <Grid>
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="10*"/>
+            <ColumnDefinition Width="50*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="0"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="runButton" Content="Run" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="0" Click="Run_Click" Height="20" Width="25"/>
+        <Button x:Name="abortButton" Content="Abort" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="1" Click="Abort_Click" IsEnabled="False" Height="20" Width="34"/>
+        <ListBox x:Name="resultBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="0" Grid.Row = "1" Grid.ColumnSpan="2" Margin="0,26,185,-674" Grid.RowSpan="2"/>
+        <Label x:Name="resultTitleLabel" Content="Run results:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
+        <Label x:Name="avgTitleLabel" Grid.Column="1" Content="Last average:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
+        <Label x:Name="avgLabel" Grid.Column="1" Content="" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Margin="0,26,0,0"/>
+
     </Grid>
 </Window>

@@ -51,7 +51,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double prevBestScore = current.Score;
 
             if (TSParameters.PrintDetails) Console.WriteLine("Neighbour generation mode: " + TSParameters.Mode);
-            if (TandemSearch && TSParameters.PrintDetails) Console.WriteLine("Starting from " + (NextModeIsRandom ? "Random" : "Greedy") + " mode");
+            if (TandemSearch && TSParameters.PrintDetails) Console.WriteLine("Starting from " + (NextModeIsRandom ? "Random" : "Heuristic") + " mode");
 
             while ((idleIterCounter < TSParameters.AllowedIdleIterations && !TandemSearch) || (TandemSearch && (tandemIdleRunCounter < TSParameters.TandemIdleSwitches)) || (TSParameters.AllowShuffleWhenStuck && shuffleCounter < TSParameters.MaxShuffles))
             {
@@ -92,7 +92,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             aspirationCandidate = SelectAspirationCandidate(neighbours);
                             failedIterations++;
                             break;
-                        case "Greedy":
+                        case "Heuristic":
                             if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
                             {
                                 if (TSParameters.PrintDetails) Console.WriteLine("Should terminate now...");
@@ -151,7 +151,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                                     //globalTabuList.PrintTabuList();
                                     //return bestSoFar;
                                 }
-                                if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("[ Greedy ] No feasible solutions were generated... Retrying #" + failedIterations);
+                                if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("[ Heuristic ] No feasible solutions were generated... Retrying #" + failedIterations);
 
                                 neighbours = neighbourGenerator.GenerateNeighboursHeuristic(current.Clone());
                                 //legjobb nem tabu szomszed kivalasztasa
@@ -161,7 +161,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                             break;
                         default:
-                            Console.WriteLine("TSParameters.Mode has an invalid value. It should be either Random/Greedy/Tandem");
+                            Console.WriteLine("TSParameters.Mode has an invalid value. It should be either Random/Heuristic/Tandem");
                             return bestSoFar;
                             break;
                     }

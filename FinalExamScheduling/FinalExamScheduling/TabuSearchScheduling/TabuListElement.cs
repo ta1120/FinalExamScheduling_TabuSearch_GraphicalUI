@@ -17,11 +17,11 @@
                 case "Random":
                     TabuIterationsLeft = TSParameters.Random.TabuLifeIterations;
                     break;
-                case "Greedy":
-                    TabuIterationsLeft = TSParameters.Greedy.TabuLifeIterations;
+                case "Heuristic":
+                    TabuIterationsLeft = TSParameters.Heuristic.TabuLifeIterations;
                     break;
                 default:
-                    TabuIterationsLeft = TSParameters.Greedy.TabuLifeIterations;
+                    TabuIterationsLeft = TSParameters.Heuristic.TabuLifeIterations;
                     break;
             }
         }

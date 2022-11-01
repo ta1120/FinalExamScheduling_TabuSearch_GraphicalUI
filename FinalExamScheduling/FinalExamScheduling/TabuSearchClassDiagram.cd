@@ -74,7 +74,7 @@
           <NewMemberFileName>TabuSearchScheduling\TSParameters.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Class Name="FinalExamScheduling.TabuSearchScheduling.TSParameters.Greedy" Collapsed="true">
+      <Class Name="FinalExamScheduling.TabuSearchScheduling.TSParameters.Heuristic" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>TabuSearchScheduling\TSParameters.cs</NewMemberFileName>
         </TypeIdentifier>

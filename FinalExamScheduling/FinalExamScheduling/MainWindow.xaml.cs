@@ -26,6 +26,7 @@ namespace FinalExamScheduling
         public MainWindow()
         {
             InitializeComponent();
+            TSParameters.Mode = "Tandem";
         }
 
         static TabuSearchScheduler scheduler;
@@ -55,8 +56,9 @@ namespace FinalExamScheduling
         public void RunTabuSearch()
         {
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("# " + (DateTime.Now.ToString()))));
+            resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("Mode: " + (TSParameters.Mode))));
+            List<double> results = new List<double>();
             double sum = 0;
-            int ctr = 0;
 
             var watch = Stopwatch.StartNew();
             FileInfo existingFile = new FileInfo("Input.xlsx");
@@ -73,8 +75,7 @@ namespace FinalExamScheduling
             Schedule resultSchedule = solution.Schedule;
             double penaltyScore = solution.Score;
 
-            sum += solution.Score;
-            ctr++;
+            results.Add(solution.Score);
 
             if (TSParameters.RestartUntilTargetReached)
             {
@@ -89,13 +90,17 @@ namespace FinalExamScheduling
                     resultSchedule = solution.Schedule;
                     penaltyScore = solution.Score;
 
-                    sum += solution.Score;
-                    ctr++;
-
-                    double avg = Math.Round((sum / ctr), 2);
+                    results.Add(solution.Score);
+                    
                     /*if(!TSParameters.MuteConsoleUnlessDone)*/
-                    if (ctr % 30 == 0) Console.WriteLine("@AVG " + avg + "\n");
-                    if (ctr % 10 == 0) avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avg + " points")) ;
+                    if (results.Count % 10 == 0) 
+                    {
+                        sum = 0;
+                        results.ForEach(s => sum += s);
+                        minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
+                        double avg = Math.Round((sum / results.Count), 2);
+                        avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avg + " points"));
+                    } 
                     if (!TSParameters.MuteConsoleUnlessDone) Console.WriteLine("Best penalty score reached: " + penaltyScore);
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
@@ -116,10 +121,20 @@ namespace FinalExamScheduling
 
             //solution.VL.printViolations();
 
+            sum = 0;
+            results.ForEach(s => sum += s);
+            minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
+            double avgFinal = Math.Round((sum / results.Count), 2);
+            avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avgFinal + " points"));
+            resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
+            resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
+            resultBox.Dispatcher.Invoke(new Action(() => resultBox.ScrollIntoView(resultBox.SelectedItem)));
+
             string extraInfo = ("_" + TSParameters.Mode + "_" + penaltyScore);
 
             ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed);
             Console.WriteLine("Done");
+            
         }
 
         private void Run_Click(object sender, EventArgs e)
@@ -144,17 +159,70 @@ namespace FinalExamScheduling
                 { IsBackground = true };
             }
             abortButton.IsEnabled = true;
+            parameterBox.IsEnabled = false;
             algorithmThread.Start();
         }
 
-        private void Abort_Click(object sender, EventArgs e)
+        private void Abort()
         {
             if (algorithmRunning)
             {
                 algorithmThread.Abort();
-                algorithmRunning = false;
-                abortButton.IsEnabled = false;
             }
+            algorithmRunning = false;
+            abortButton.IsEnabled = false;
+            parameterBox.IsEnabled = true;
         }
+        private void Abort_Click(object sender, EventArgs e)
+        {
+            Abort();
+        }
+
+        private void OnModeSelectorChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TSParameters.Mode = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string;
+        }
+
+        private void OnSoftConstCBUnchecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.OptimizeSoftConstraints = false;
+        }
+        private void OnSoftConstCBChecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.OptimizeSoftConstraints = true;
+        }
+        private void OnShuffleCBUnchecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.AllowShuffleWhenStuck = false;
+        }
+        private void OnShuffleCBChecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.AllowShuffleWhenStuck = true;
+        }
+        private void OnRestartCBUnchecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.RestartUntilTargetReached = false;
+        }
+        private void OnRestartCBChecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.RestartUntilTargetReached = true;
+        }
+        private void OnViolationPersistanceCBUnchecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.CheckViolationPersistance = false;
+        }
+        private void OnViolationPersistanceCBChecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.CheckViolationPersistance = true;
+        }
+        private void OnHardFirstCBUnchecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.FixAllHardFirst = false;
+        }
+        private void OnHardFirstCBChecked(object sender, RoutedEventArgs e)
+        {
+            TSParameters.FixAllHardFirst = true;
+        }
+
     }
 }

@@ -4,21 +4,24 @@
     {
 
         //Switches
-        public const bool AllowShuffleWhenStuck = false;
+        public static bool AllowShuffleWhenStuck = false;
 
         public const bool MuteConsoleUnlessDone = false;
 
         public const bool PrintDetails = false;
 
-        public const bool OptimizeSoftConstraints = false;
+        public static bool OptimizeSoftConstraints = false;
 
-        public const bool RestartUntilTargetReached = true;
+        public static bool RestartUntilTargetReached = true;
 
         public const bool LogIterationalProgress = true;
 
+        public static bool CheckViolationPersistance = true;
 
-        //Mode of neighbour generation: Random/Greedy/Tandem
-        public const string Mode = "Tandem";
+        public static bool FixAllHardFirst = true;
+
+        //Mode of neighbour generation: Random/Heuristic/Tandem
+        public static string Mode = "Tandem";
 
         //Tabu parameters
         public class Random
@@ -28,7 +31,7 @@
             public const int TabuListLength = 1; //40
         }
 
-        public class Greedy
+        public class Heuristic
         {
             public const int TabuLifeIterations = 1; //10
 

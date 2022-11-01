@@ -10,21 +10,47 @@
              Title="TabuSearh Algorithm - FinalExam_Scheduling">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="10*"/>
-            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="41*"/>
+            <ColumnDefinition Width="145*"/>
+            <ColumnDefinition Width="186*"/>
+            <ColumnDefinition Width="929*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="70"/>
-            <RowDefinition Height="0"/>
+
         </Grid.RowDefinitions>
         <Button x:Name="runButton" Content="Run" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="0" Click="Run_Click" Height="20" Width="25"/>
-        <Button x:Name="abortButton" Content="Abort" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="1" Click="Abort_Click" IsEnabled="False" Height="20" Width="34"/>
-        <ListBox x:Name="resultBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="0" Grid.Row = "1" Grid.ColumnSpan="2" Margin="0,26,185,-674" Grid.RowSpan="2"/>
-        <Label x:Name="resultTitleLabel" Content="Run results:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
-        <Label x:Name="avgTitleLabel" Grid.Column="1" Content="Last average:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
-        <Label x:Name="avgLabel" Grid.Column="1" Content="" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Margin="0,26,0,0"/>
+        <Button x:Name="abortButton" Content="Abort" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Center" Grid.Column="2" Click="Abort_Click" IsEnabled="False" Height="20" Width="34"/>
+        <ListBox x:Name="resultBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="0" Grid.Row = "1" Grid.ColumnSpan="3" Margin="0,26,185,-674"/>
+        <Label x:Name="resultTitleLabel" Content="Run results:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <GroupBox x:Name="parameterBox" Grid.Column="2" Header="Algorithm parameters" Grid.Row="1" Grid.ColumnSpan="2" Margin="185,0,0,-674">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="123*"/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="modeSelTitleLabel" Content="Mode selection:" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="0,0,0,695"/>
+                <ComboBox x:Name="modeSelector" HorizontalAlignment="Left" Margin="0,26,0,673" Width="120" Text="Runner Mode" SelectionChanged="OnModeSelectorChanged" Grid.ColumnSpan="2">
+                    <ComboBoxItem IsSelected="True">Tandem</ComboBoxItem>
+                    <ComboBoxItem>Random</ComboBoxItem>
+                    <ComboBoxItem>Heuristic</ComboBoxItem>
+                </ComboBox>
+                <CheckBox x:Name="softConstCheckBox" Content="Optimize soft constraints" HorizontalAlignment="Left" Margin="0,53,0,650" IsChecked="True" Grid.ColumnSpan="2" Checked="OnSoftConstCBChecked" Unchecked="OnSoftConstCBUnchecked"/>
+                <CheckBox x:Name="restartCheckBox" Content="Auto restart algorithm" HorizontalAlignment="Left" Margin="0,71,0,632" IsChecked="True" Grid.ColumnSpan="2" Checked="OnRestartCBChecked" Unchecked="OnRestartCBUnchecked"/>
+                <CheckBox x:Name="hardFirstCheckBox" Content="Fix hard violations first" HorizontalAlignment="Left" Margin="0,89,0,614" IsChecked="True" Grid.ColumnSpan="2" Checked="OnHardFirstCBChecked" Unchecked="OnHardFirstCBUnchecked"/>
+                <CheckBox x:Name="shuffleCheckBox" Content="Allow shuffling" HorizontalAlignment="Left" Margin="0,107,0,596" IsChecked="True" Grid.ColumnSpan="2" Checked="OnShuffleCBChecked" Unchecked="OnShuffleCBUnchecked"/>
+                <CheckBox x:Name="violationPersistanceCheckBox" Content="Check violation persistance" HorizontalAlignment="Left" Margin="0,125,0,578" IsChecked="True" Grid.ColumnSpan="2" Checked="OnViolationPersistanceCBChecked" Unchecked="OnViolationPersistanceCBUnchecked"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="statBox" Grid.Column="2" Header="Brief result statistics" Grid.Row="1" Margin="0,0,1,-674">
+            <Grid>
+                <Label x:Name="avgTitleLabel" Grid.Column="2" Content="Last run's average:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
+                <Label x:Name="avgLabel" Grid.Column="2" Content="-" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Margin="0,26,0,0"/>
+                <Label x:Name="minTitleLabel" Content="Last run's minimum:" HorizontalAlignment="Left" Margin="0,52,0,641"/>
+                <Label x:Name="minLabel" Grid.Column="2" Content="-" HorizontalAlignment="Left" Grid.Row="1" Margin="0,80,0,-36"/>
+            </Grid>
+        </GroupBox>
 
     </Grid>
 </Window>

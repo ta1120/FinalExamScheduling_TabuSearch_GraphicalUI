@@ -16,11 +16,11 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 case "Random":
                     listLength = TSParameters.Random.TabuListLength;
                     break;
-                case "Greedy":
-                    listLength = TSParameters.Greedy.TabuListLength;
+                case "Heuristic":
+                    listLength = TSParameters.Heuristic.TabuListLength;
                     break;
                 default:
-                    listLength = TSParameters.Greedy.TabuListLength;
+                    listLength = TSParameters.Heuristic.TabuListLength;
                     break;
             }
 
@@ -85,8 +85,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 case "Random":
                     listLength = TSParameters.Random.TabuListLength;
                     break;
-                case "Greedy":
-                    listLength = TSParameters.Greedy.TabuListLength;
+                case "Heuristic":
+                    listLength = TSParameters.Heuristic.TabuListLength;
                     break;
                 default:
                     listLength = TSParameters.Random.TabuListLength;

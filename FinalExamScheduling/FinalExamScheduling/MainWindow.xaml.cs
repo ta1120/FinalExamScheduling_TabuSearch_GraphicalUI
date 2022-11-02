@@ -59,6 +59,7 @@ namespace FinalExamScheduling
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("Mode: " + (TSParameters.Mode))));
             List<double> results = new List<double>();
             double sum = 0;
+            double feasibleScheduleCount = 0;
 
             var watch = Stopwatch.StartNew();
             FileInfo existingFile = new FileInfo("Input.xlsx");
@@ -76,13 +77,12 @@ namespace FinalExamScheduling
             double penaltyScore = solution.Score;
 
             results.Add(solution.Score);
+            if (!solution.VL.ContainsHardViolation()) feasibleScheduleCount++;
 
             if (TSParameters.RestartUntilTargetReached)
             {
                 while (solution.Score > TSParameters.TargetScore)
                 {
-                    if (TSParameters.PrintDetails) Console.WriteLine("Target not reached... Restarting search");
-                    if (TSParameters.PrintDetails) Console.WriteLine("#######################################");
                     iterationProgress.Clear();
                     watch.Restart();
                     solution = scheduler.Run(iterationProgress);
@@ -92,7 +92,6 @@ namespace FinalExamScheduling
 
                     results.Add(solution.Score);
                     
-                    /*if(!TSParameters.MuteConsoleUnlessDone)*/
                     if (results.Count % 10 == 0) 
                     {
                         sum = 0;
@@ -100,8 +99,8 @@ namespace FinalExamScheduling
                         minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
                         double avg = Math.Round((sum / results.Count), 2);
                         avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avg + " points"));
+                        feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount / results.Count), 1) + "%"));
                     } 
-                    if (!TSParameters.MuteConsoleUnlessDone) Console.WriteLine("Best penalty score reached: " + penaltyScore);
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.ScrollIntoView(resultBox.SelectedItem)));
@@ -117,10 +116,6 @@ namespace FinalExamScheduling
             }
             string elapsed = watch.Elapsed.ToString();
 
-            Console.WriteLine("Best penalty score: " + penaltyScore);
-
-            //solution.VL.printViolations();
-
             sum = 0;
             results.ForEach(s => sum += s);
             minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
@@ -132,9 +127,7 @@ namespace FinalExamScheduling
 
             string extraInfo = ("_" + TSParameters.Mode + "_" + penaltyScore);
 
-            ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed);
-            Console.WriteLine("Done");
-            
+            ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed); 
         }
 
         private void Run_Click(object sender, EventArgs e)
@@ -207,13 +200,15 @@ namespace FinalExamScheduling
         {
             TSParameters.RestartUntilTargetReached = true;
         }
-        private void OnViolationPersistanceCBUnchecked(object sender, RoutedEventArgs e)
+        private void OnWriteOutCBUnchecked(object sender, RoutedEventArgs e)
         {
-            TSParameters.CheckViolationPersistance = false;
+            writeOutLimitInput.IsEnabled = true;
+            SetWriteOutLimit();
         }
-        private void OnViolationPersistanceCBChecked(object sender, RoutedEventArgs e)
+        private void OnWriteOutCBChecked(object sender, RoutedEventArgs e)
         {
-            TSParameters.CheckViolationPersistance = true;
+            writeOutLimitInput.IsEnabled = false;
+            TSParameters.WriteOutLimit = -1;
         }
         private void OnHardFirstCBUnchecked(object sender, RoutedEventArgs e)
         {
@@ -222,6 +217,13 @@ namespace FinalExamScheduling
         private void OnHardFirstCBChecked(object sender, RoutedEventArgs e)
         {
             TSParameters.FixAllHardFirst = true;
+        }
+        private void OnWriteoutLimitChanged(object sender, TextChangedEventArgs args) { SetWriteOutLimit(); }
+        private void SetWriteOutLimit()
+        {
+            int limit;
+            if (int.TryParse(writeOutLimitInput.Text, out limit)) TSParameters.WriteOutLimit = limit;
+            else TSParameters.WriteOutLimit = 0;
         }
 
     }

@@ -16,10 +16,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public SolutionCandidate Run(List<double> iterationProgress)
         {
-            //Algorithm choice: later to be outsourced to class TSParameters
+            //Created for the ability of choosing which version of the algorithm to run, but only one version was implemented so far
             TabuSearchWithVL tabuSearchAlgorithm = new TabuSearchWithVL(ctx);
-
-            if (TSParameters.PrintDetails) Console.WriteLine("TabuSearch running...");
 
             SolutionCandidate best = tabuSearchAlgorithm.Start(iterationProgress);
 

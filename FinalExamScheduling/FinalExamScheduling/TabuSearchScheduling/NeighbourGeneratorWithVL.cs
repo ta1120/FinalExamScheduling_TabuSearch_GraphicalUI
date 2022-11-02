@@ -428,7 +428,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             neighbours[i].Schedule.FinalExams[x].Student = temp;
                             neighbours[i].Schedule.FinalExams[index].Supervisor = neighbours[i].Schedule.FinalExams[index].Student.Supervisor;
                             neighbours[i].Schedule.FinalExams[x].Supervisor = neighbours[i].Schedule.FinalExams[x].Student.Supervisor;
-                            //Console.WriteLine("Swapped: " + neighbours[i].Schedule.FinalExams[index].Student.Name + " - " + neighbours[i].Schedule.FinalExams[x].Student.Name);
                         }
                     }
                     else if (v.Key.Equals("studentDuplicated"))

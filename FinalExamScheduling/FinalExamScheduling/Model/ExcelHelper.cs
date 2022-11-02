@@ -210,8 +210,6 @@ namespace FinalExamScheduling.Model
             var context = new Context();
             using (ExcelPackage xlPackage = new ExcelPackage(existingFile))
             {
-                Console.WriteLine("Reading of Excel was succesful");
-
                 ExcelWorksheet ws_students = xlPackage.Workbook.Worksheets[1];
                 ExcelWorksheet ws_instructors = xlPackage.Workbook.Worksheets[2];
                 ExcelWorksheet ws_courses = xlPackage.Workbook.Worksheets[3];
@@ -264,9 +262,6 @@ namespace FinalExamScheduling.Model
                         Availability = tempAvailability.ToArray(),
                         Roles = tempRoles
                     });
-
-                    //Console.WriteLine(context.instructors[iRow - 3].name + "\t " +  "\t " + context.instructors[iRow - 3].roles);
-
                 }
 
 
@@ -287,8 +282,6 @@ namespace FinalExamScheduling.Model
                         CourseCode = ws_courses.Cells[1, iCol].Text,
                         Instructors = tempInstructors.ToArray()
                     });
-
-                    //Console.WriteLine(context.courses[iCol - 1].name + "\t " + context.courses[iCol - 1].courseCode + "\t ");
                 }
 
                 //Student
@@ -302,9 +295,6 @@ namespace FinalExamScheduling.Model
                         ExamCourse = courses.Find(item => item.CourseCode.Equals(ws_students.Cells[iRow, 5].Text)),
 
                     });
-
-                    //Console.WriteLine(context.students[iRow - 2].name + "\t " + context.students[iRow - 2].neptun + "\t " 
-                    //    + context.students[iRow - 2].supervisor.name + "\t " + context.students[iRow - 2].examCourse.name);
                 }
 
                 context.Students = students.ToArray();

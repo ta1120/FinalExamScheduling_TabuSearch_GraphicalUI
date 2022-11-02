@@ -6,10 +6,6 @@
         //Switches
         public static bool AllowShuffleWhenStuck = false;
 
-        public const bool MuteConsoleUnlessDone = false;
-
-        public const bool PrintDetails = false;
-
         public static bool OptimizeSoftConstraints = false;
 
         public static bool RestartUntilTargetReached = true;
@@ -42,7 +38,7 @@
 
         public const int ExamBlockLength = 5;
 
-        public const int WriteOutLimit = 60; //If scores under this are reached, the results will be written out to file. Set to negative value to write all results to file
+        public static int WriteOutLimit = 60; //If scores under this are reached, the results will be written out to file. Set to negative value to write all results to file
 
         public const int MaxShuffles = 1;
 

@@ -21,14 +21,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
             Schedule randomSchedule = new Schedule(examCount);
             bool[] studentUsed = new bool[examCount];
 
-            if (TSParameters.PrintDetails) Console.WriteLine("Generating Random Initial Solution\n");
-
             for (int i = 0; i < examCount; i++)
             {
                 randomSchedule.FinalExams[i] = new FinalExam();
 
                 int x = rnd.Next(0, ctx.Students.Length);
-                while (studentUsed[x] /*|| !ctx.Students[x].Supervisor.Availability[i]*/) x = rnd.Next(0, ctx.Students.Length);
+                while (studentUsed[x]) x = rnd.Next(0, ctx.Students.Length);
 
                 studentUsed[x] = true;
 
@@ -46,7 +44,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
             }
 
             return new SolutionCandidate(randomSchedule);
-            //throw new NotImplementedException();
         }
     }
 }

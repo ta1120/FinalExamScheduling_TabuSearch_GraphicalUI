@@ -39,7 +39,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             //koltseg es VL kiszamitasa
             current.Score = costCalc.Evaluate(current);
-            if (TSParameters.PrintDetails) Console.WriteLine("Initial schedule score: " + current.Score);
             current.VL = new ViolationList().Evaluate(current);
             if (TSParameters.LogIterationalProgress) iterationProgress.Add(current.Score);
 
@@ -50,9 +49,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
             int shuffleCounter = 0;
             double prevBestScore = current.Score;
 
-            if (TSParameters.PrintDetails) Console.WriteLine("Neighbour generation mode: " + TSParameters.Mode);
-            if (TandemSearch && TSParameters.PrintDetails) Console.WriteLine("Starting from " + (NextModeIsRandom ? "Random" : "Heuristic") + " mode");
-
             while ((idleIterCounter < TSParameters.AllowedIdleIterations && !TandemSearch) || (TandemSearch && (tandemIdleRunCounter < TSParameters.TandemIdleSwitches)) || (TSParameters.AllowShuffleWhenStuck && shuffleCounter < TSParameters.MaxShuffles))
             {
                 if (TSParameters.AllowShuffleWhenStuck && idleIterCounter >= TSParameters.AllowedIdleIterations && shuffleCounter < TSParameters.MaxShuffles)
@@ -60,7 +56,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     current = ShuffleStudents(current).Clone();
                     shuffleCounter++;
                     idleIterCounter = 0;
-                    if (TSParameters.PrintDetails) Console.WriteLine("Shuffled students for the #" + shuffleCounter + " time");
                 }
 
                 //szomszedok generalasa VL alapjan
@@ -80,12 +75,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                             if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
                             {
-                                if (TSParameters.PrintDetails) Console.WriteLine("Should terminate now...");
-                                if (TSParameters.PrintDetails) Console.WriteLine("If this keeps happening, maybe you should tweak the values in the TSParameters class.");
-                                //globalTabuList.PrintTabuList();
                                 return bestSoFar;
                             }
-                            if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("No feasible solutions were generated... Retrying #" + failedIterations);
                             neighbours = neighbourGenerator.GenerateNeighboursRandom(current.Clone());
                             //legjobb nem tabu szomszed kivalasztasa
                             bestNeighbour = SelectBestFeasibleCandidate(neighbours);
@@ -95,13 +86,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         case "Heuristic":
                             if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
                             {
-                                if (TSParameters.PrintDetails) Console.WriteLine("Should terminate now...");
-                                if (TSParameters.PrintDetails) Console.WriteLine("If this keeps happening, maybe you should tweak the values in the TSParameters class.");
-                                //globalTabuList.PrintTabuList();
-                                //bestSoFar.VL.printViolations(bestSoFar);
                                 return bestSoFar;
                             }
-                            if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("No feasible solutions were generated... Retrying #" + failedIterations);
                             neighbours = neighbourGenerator.GenerateNeighboursHeuristic(current.Clone());
                             //legjobb nem tabu szomszed kivalasztasa
                             bestNeighbour = SelectBestFeasibleCandidate(neighbours);
@@ -111,7 +97,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         case "Tandem":
                             if (idleIterCounter >= TSParameters.AllowedIdleIterations)
                             {
-                                if (TSParameters.PrintDetails) Console.WriteLine("\n[ Tandem runner change ]");
                                 NextModeIsRandom = !NextModeIsRandom;
                                 idleIterCounter = 0;
                                 tandemIdleRunCounter++;
@@ -125,12 +110,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                                     failedIterations = 0;
                                     idleIterCounter = 0;
                                     tandemIdleRunCounter++;
-                                    
-                                    if (TSParameters.PrintDetails) Console.WriteLine("\n[ Tandem runner change ]");
-                                    //globalTabuList.PrintTabuList();
-                                    //return bestSoFar;
                                 }
-                                if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("[ Random ] No feasible solutions were generated... Retrying #" + failedIterations);
 
                                 neighbours = neighbourGenerator.GenerateNeighboursRandom(current.Clone());
                                 //legjobb nem tabu szomszed kivalasztasa
@@ -145,13 +125,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
                                     NextModeIsRandom = true;
                                     failedIterations = 0;
                                     idleIterCounter = 0;
-                                    tandemIdleRunCounter++;
-                                    
-                                    if (TSParameters.PrintDetails) Console.WriteLine("\n[ Tandem runner change ]");
-                                    //globalTabuList.PrintTabuList();
-                                    //return bestSoFar;
+                                    tandemIdleRunCounter++;   
                                 }
-                                if (failedIterations > 0 && TSParameters.PrintDetails) Console.WriteLine("[ Heuristic ] No feasible solutions were generated... Retrying #" + failedIterations);
 
                                 neighbours = neighbourGenerator.GenerateNeighboursHeuristic(current.Clone());
                                 //legjobb nem tabu szomszed kivalasztasa
@@ -161,11 +136,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                             break;
                         default:
-                            Console.WriteLine("TSParameters.Mode has an invalid value. It should be either Random/Heuristic/Tandem");
                             return bestSoFar;
                             break;
                     }
-                    if(TSParameters.PrintDetails) Console.WriteLine(bestNeighbour == null ? "No feasible neighbour generated" : "Found at least one feasible neighbour");
                 }
                 while (bestNeighbour == null && (!TandemSearch || (TandemSearch && tandemIdleRunCounter < TSParameters.TandemIdleSwitches)));
 
@@ -187,7 +160,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 current.VL = new ViolationList().Evaluate(current);
 
-                if (TSParameters.PrintDetails) Console.WriteLine("#" + iterCounter++ + " iteration best neighbour score: " + current.Score);
                 if (TSParameters.LogIterationalProgress) iterationProgress.Add(current.Score);
 
                 //legjobb megoldás frissítése ha jobb az új
@@ -196,7 +168,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 //AspirationCriteria ellenőrzése
                 if (aspirationCandidate != null && bestSoFar.Score > aspirationCandidate.Score)
                 {
-                    if (TSParameters.PrintDetails) Console.WriteLine("-> AspirationCriteria met, updating current and best schedule. Score: " + aspirationCandidate.Score);
                     current = aspirationCandidate.Clone();
                     bestSoFar = aspirationCandidate.Clone();
                     globalTabuList.tabuList.Clear();
@@ -213,14 +184,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     if (TandemSearch)
                     {
                         tandemIdleRunCounter = 0;
-                        //Console.WriteLine("[ Improvement ] on this run.");
                     }
                 }
 
                 //ha üres a legjobb megoldás VL listája, akkor a jelenleg implementált követelmények maximálisan optimalizálva lettek
                 if (bestSoFar.VL.Violations.Count == 0)
                 {
-                    Console.WriteLine("Solution is fully optimized.");
                     return bestSoFar;
                 }
 
@@ -229,12 +198,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
 
             bestSoFar.VL = new ViolationList().Evaluate(bestSoFar);
-            //Console.WriteLine("\nViolations in best found schedule: \n");
-            if (TSParameters.PrintDetails) bestSoFar.VL.printViolations();
-
-            //globalTabuList.PrintTabuList();
-
-            if (idleIterCounter >= TSParameters.AllowedIdleIterations && TSParameters.PrintDetails) Console.WriteLine("Maximum allowed idle iterations reached (" + TSParameters.AllowedIdleIterations + ")");
 
             return bestSoFar;
         }
@@ -272,16 +235,13 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     candidate.Score = ccc.Evaluate(candidate);
                     best = candidate.Clone();
-                    //Console.WriteLine("Score: " + candidate.Score);
                 }
                 else if (IsFeasibleSolution(candidate))
                 {
                     candidate.Score = ccc.Evaluate(candidate);
                     if (candidate.Score < best.Score) best = candidate.Clone();
-                    //Console.WriteLine("Score: " + candidate.Score);
                 }
             }
-            //Console.WriteLine("BestScore: " + best.Score);
             return best;
         }
 
@@ -295,7 +255,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     candidate.Score = ccc.Evaluate(candidate);
                     best = candidate.Clone();
-                    //Console.WriteLine("Score: " + candidate.Score);
                 }
                 else if (!IsFeasibleSolution(candidate))
                 {

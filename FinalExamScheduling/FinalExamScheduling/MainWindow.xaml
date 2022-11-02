@@ -40,7 +40,9 @@
                 <CheckBox x:Name="restartCheckBox" Content="Auto restart algorithm" HorizontalAlignment="Left" Margin="0,71,0,632" IsChecked="True" Grid.ColumnSpan="2" Checked="OnRestartCBChecked" Unchecked="OnRestartCBUnchecked"/>
                 <CheckBox x:Name="hardFirstCheckBox" Content="Fix hard violations first" HorizontalAlignment="Left" Margin="0,89,0,614" IsChecked="True" Grid.ColumnSpan="2" Checked="OnHardFirstCBChecked" Unchecked="OnHardFirstCBUnchecked"/>
                 <CheckBox x:Name="shuffleCheckBox" Content="Allow shuffling" HorizontalAlignment="Left" Margin="0,107,0,596" IsChecked="True" Grid.ColumnSpan="2" Checked="OnShuffleCBChecked" Unchecked="OnShuffleCBUnchecked"/>
-                <CheckBox x:Name="violationPersistanceCheckBox" Content="Check violation persistance" HorizontalAlignment="Left" Margin="0,125,0,578" IsChecked="True" Grid.ColumnSpan="2" Checked="OnViolationPersistanceCBChecked" Unchecked="OnViolationPersistanceCBUnchecked"/>
+                <TextBox x:Name="writeOutLimitInput" HorizontalAlignment="Left" Margin="10,151,0,0" TextWrapping="Wrap" Text="1500" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" TextChanged="OnWriteoutLimitChanged"/>
+                <Label x:Name="modeSelTitleLabel_Copy" Content="Write result to Excel below points:" HorizontalAlignment="Left" Grid.ColumnSpan="2" Margin="0,125,0,570"/>
+                <CheckBox x:Name="writeOutCheckBox" Content="Write every result to Excel" Margin="10,169,718,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Checked="OnWriteOutCBChecked" Unchecked="OnWriteOutCBUnchecked"/>
             </Grid>
         </GroupBox>
         <GroupBox x:Name="statBox" Grid.Column="2" Header="Brief result statistics" Grid.Row="1" Margin="0,0,1,-674">
@@ -48,7 +50,9 @@
                 <Label x:Name="avgTitleLabel" Grid.Column="2" Content="Last run's average:" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top"/>
                 <Label x:Name="avgLabel" Grid.Column="2" Content="-" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Margin="0,26,0,0"/>
                 <Label x:Name="minTitleLabel" Content="Last run's minimum:" HorizontalAlignment="Left" Margin="0,52,0,641"/>
-                <Label x:Name="minLabel" Grid.Column="2" Content="-" HorizontalAlignment="Left" Grid.Row="1" Margin="0,80,0,-36"/>
+                <Label x:Name="minLabel" Content="-" HorizontalAlignment="Left" Margin="0,80,0,615"/>
+                <Label x:Name="feasiblePercentageTitle" Content="Feasible solutions in last run:" HorizontalAlignment="Left" Margin="0,106,0,587"/>
+                <Label x:Name="feasiblePercentageLabel" Content="-" HorizontalAlignment="Left" Margin="0,134,0,561"/>
             </Grid>
         </GroupBox>
 

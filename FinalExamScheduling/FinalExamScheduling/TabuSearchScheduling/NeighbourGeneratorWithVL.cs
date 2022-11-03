@@ -30,7 +30,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 foreach (KeyValuePair<string, string> v in VL.Violations)
                 {
-                    if (v.Key.Equals(v.Key.Equals("supervisorAvailability")))
+                    if (v.Key.Equals("supervisorAvailability"))
                     {
                         string[] data = v.Value.Split(';');
                         int index = int.Parse(data[0]);
@@ -38,7 +38,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         if (neighbours[i].Schedule.FinalExams[index].Supervisor.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
                         {
                             int x = rand.Next(0, ctx.Students.Length);
-                            while (index == x && neighbours[i].Schedule.FinalExams[index].Student.Supervisor.Availability[x] && neighbours[i].Schedule.FinalExams[x].Student.Supervisor.Availability[index]) x = rand.Next(0, ctx.Students.Length);
+                            while (index == x || !neighbours[i].Schedule.FinalExams[index].Student.Supervisor.Availability[x] || !neighbours[i].Schedule.FinalExams[x].Student.Supervisor.Availability[index]) x = rand.Next(0, ctx.Students.Length);
 
                             Student temp = neighbours[i].Schedule.FinalExams[index].Student;
 
@@ -412,7 +412,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 //Hard violations
                 foreach (KeyValuePair<string, string> v in VL.Violations)
                 {
-                    if (v.Key.Equals(v.Key.Equals("supervisorAvailability")))
+                    if (v.Key.Equals("supervisorAvailability"))
                     {
                         string[] data = v.Value.Split(';');
                         int index = int.Parse(data[0]);
@@ -420,7 +420,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         if (neighbours[i].Schedule.FinalExams[index].Supervisor.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
                         {
                             int x = rand.Next(0, ctx.Students.Length);
-                            while (index == x) x = rand.Next(0, ctx.Students.Length);
+                            while (index == x || !neighbours[i].Schedule.FinalExams[index].Student.Supervisor.Availability[x] || !neighbours[i].Schedule.FinalExams[x].Student.Supervisor.Availability[index]) x = rand.Next(0, ctx.Students.Length);
 
                             Student temp = neighbours[i].Schedule.FinalExams[index].Student;
 

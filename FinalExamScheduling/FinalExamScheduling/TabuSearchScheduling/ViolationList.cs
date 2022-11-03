@@ -37,7 +37,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     || v.Key == "presidentChange" 
                     || v.Key == "secretaryChange" 
                     || v.Key == "presidentIsSecretary" 
-                    || v.Key == "PresidentIsMember" 
+                    || v.Key == "presidentIsMember" 
                     || v.Key == "secretaryIsMember" 
                     || v.Key == "wrongSupervisor") return true;
             }

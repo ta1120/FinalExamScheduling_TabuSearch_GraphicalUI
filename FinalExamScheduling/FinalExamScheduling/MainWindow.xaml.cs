@@ -91,7 +91,8 @@ namespace FinalExamScheduling
                     penaltyScore = solution.Score;
 
                     results.Add(solution.Score);
-                    
+                    if (!solution.VL.ContainsHardViolation()) feasibleScheduleCount++;
+
                     if (results.Count % 10 == 0) 
                     {
                         sum = 0;
@@ -99,7 +100,7 @@ namespace FinalExamScheduling
                         minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
                         double avg = Math.Round((sum / results.Count), 2);
                         avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avg + " points"));
-                        feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount / results.Count), 1) + "%"));
+                        feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount * 100 / results.Count), 1) + "%"));
                     } 
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
                     resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
@@ -186,11 +187,16 @@ namespace FinalExamScheduling
         }
         private void OnShuffleCBUnchecked(object sender, RoutedEventArgs e)
         {
+            maxShufflesInput.IsEnabled = false;
+            shufflePercentageInput.IsEnabled = false;
             TSParameters.AllowShuffleWhenStuck = false;
         }
         private void OnShuffleCBChecked(object sender, RoutedEventArgs e)
         {
+            maxShufflesInput.IsEnabled = true;
+            shufflePercentageInput.IsEnabled = true; 
             TSParameters.AllowShuffleWhenStuck = true;
+            SetShufflePercentage();
         }
         private void OnRestartCBUnchecked(object sender, RoutedEventArgs e)
         {
@@ -222,9 +228,80 @@ namespace FinalExamScheduling
         private void SetWriteOutLimit()
         {
             int limit;
-            if (int.TryParse(writeOutLimitInput.Text, out limit)) TSParameters.WriteOutLimit = limit;
+            if (int.TryParse(writeOutLimitInput.Text, out limit))
+            {
+                if(limit > 0 && limit <= 100) TSParameters.WriteOutLimit = limit;
+                else TSParameters.WriteOutLimit = 0;
+            } 
             else TSParameters.WriteOutLimit = 0;
         }
-
+        private void OnShufflePercentageChanged(object sender, TextChangedEventArgs args) { SetShufflePercentage(); }
+        private void OnMaxShufflesChanged(object sender, TextChangedEventArgs args) { SetShuffleCount(); }
+        private void SetShufflePercentage()
+        {
+            int percentage;
+            if (int.TryParse(shufflePercentageInput.Text, out percentage)) TSParameters.ShufflePercentage = percentage;
+            else TSParameters.WriteOutLimit = 0;
+        }
+        private void SetShuffleCount()
+        {
+            int count;
+            if (int.TryParse(maxShufflesInput.Text, out count)) TSParameters.MaxShuffles = count;
+            else TSParameters.MaxShuffles = 1;
+        }
+        private void OnGeneratedCandidatesChanged(object sender, TextChangedEventArgs args) 
+        {
+            int n;
+            if (int.TryParse(generatedCandidatesInput.Text, out n)) TSParameters.GeneratedCandidates = n;
+            else TSParameters.GeneratedCandidates = 10;
+        }
+        private void OnIdleIterationsChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(allowedIdleIterationsInput.Text, out n)) TSParameters.AllowedIdleIterations = n;
+            else TSParameters.AllowedIdleIterations = 10;
+        }
+        private void OnMaxFailedGenerationsChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(maxFailedNeighbourGenerationsInput.Text, out n)) TSParameters.MaxFailedNeighbourGenerations = n;
+            else TSParameters.MaxFailedNeighbourGenerations = 5;
+        }
+        private void OnTandemSwitchesChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(tandemIdleSwitchesInput.Text, out n)) TSParameters.TandemIdleSwitches = n;
+            else TSParameters.TandemIdleSwitches = 5;
+        }
+        private void OnTargetScoreChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(targetScoreInput.Text, out n)) TSParameters.TargetScore = n;
+            else TSParameters.TargetScore = 0;
+        }
+        private void OnRandomTTLChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(randomTTLInput.Text, out n)) TSParameters.Random.TabuLifeIterations = n;
+            else TSParameters.Random.TabuLifeIterations = 1;
+        }
+        private void OnRandomListLengthChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(randomTabuListLengthInput.Text, out n)) TSParameters.Random.TabuListLength = n;
+            else TSParameters.Random.TabuListLength = 1;
+        }
+        private void OnHeuristicTTLChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(heuristicTTLInput.Text, out n)) TSParameters.Heuristic.TabuLifeIterations = n;
+            else TSParameters.Heuristic.TabuLifeIterations = 1;
+        }
+        private void OnHeuristicListLengthChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(heuristicTabuListLengthInput.Text, out n)) TSParameters.Heuristic.TabuListLength = n;
+            else TSParameters.Heuristic.TabuListLength = 1;
+        }
     }
 }

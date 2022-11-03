@@ -22,16 +22,16 @@
         //Tabu parameters
         public class Random
         {
-            public const int TabuLifeIterations = 5; //15
+            public static int TabuLifeIterations = 5; //15
 
-            public const int TabuListLength = 1; //40
+            public static int TabuListLength = 1; //40
         }
 
         public class Heuristic
         {
-            public const int TabuLifeIterations = 1; //10
+            public static int TabuLifeIterations = 1; //10
 
-            public const int TabuListLength = 1; //3
+            public static int TabuListLength = 1; //3
         }
 
         //Other parameters
@@ -40,21 +40,21 @@
 
         public static int WriteOutLimit = 60; //If scores under this are reached, the results will be written out to file. Set to negative value to write all results to file
 
-        public const int MaxShuffles = 1;
+        public static int MaxShuffles = 1;
 
-        public const int ShufflePercentage = 20;
+        public static int ShufflePercentage = 20;
 
-        public const int GeneratedCandidates = 15; //25
+        public static int GeneratedCandidates = 15; //25
 
-        public const int AllowedIdleIterations = 10; //10
+        public static int AllowedIdleIterations = 10; //10
 
-        public const double TargetScore = 40; //40 is the best reachable score for the original input file
+        public static double TargetScore = 40; //40 is the best reachable score for the original input file
 
         public const bool GetInfo = true;
 
-        public const int MaxFailedNeighbourGenerations = 5; //3
+        public static int MaxFailedNeighbourGenerations = 5; //3
 
-        public const int TandemIdleSwitches = 5; //1
+        public static int TandemIdleSwitches = 5; //1
 
         //Optimalization switches for distinct constraints
         public const bool SolveWrongExaminer = true;

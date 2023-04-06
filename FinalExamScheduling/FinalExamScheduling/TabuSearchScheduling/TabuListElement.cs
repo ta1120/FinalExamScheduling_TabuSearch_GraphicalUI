@@ -1,16 +1,16 @@
-﻿namespace FinalExamScheduling.TabuSearchScheduling
+﻿using FinalExamScheduling.Model;
+
+namespace FinalExamScheduling.TabuSearchScheduling
 {
     class TabuListElement
     {
-        public string Attribute;
-        public string Value;
+        public FinalExam Exam;
         public int TabuIterationsLeft;
         public int ExamSlot;
 
-        public TabuListElement(string attr, string value, int slot)
+        public TabuListElement(FinalExam _exam, int slot)
         {
-            Attribute = attr;
-            Value = value;
+            Exam = _exam;
             ExamSlot = slot;
             switch (TSParameters.Mode)
             {

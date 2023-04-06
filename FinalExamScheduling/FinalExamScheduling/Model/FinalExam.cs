@@ -1,4 +1,6 @@
-﻿namespace FinalExamScheduling.Model
+﻿using System.Windows;
+
+namespace FinalExamScheduling.Model
 {
     public class FinalExam : Entity
     {
@@ -30,6 +32,25 @@
                 Member = Member,
                 Examiner = Examiner
             };
+        }
+
+        public bool IsEqualExam(FinalExam exam)
+        {
+            if (
+                this.Student.Name.Equals(exam.Student.Name)
+                &&
+                this.Supervisor.Name.Equals(exam.Supervisor.Name)
+                &&
+                this.President.Name.Equals(exam.President.Name)
+                &&
+                this.Secretary.Name.Equals(exam.Secretary.Name)
+                &&
+                this.Member.Name.Equals(exam.Member.Name)
+                &&
+                this.Examiner.Name.Equals(exam.Examiner.Name)
+            ) return true;
+            
+            return false;
         }
 
         public string toString()

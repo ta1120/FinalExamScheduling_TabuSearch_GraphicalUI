@@ -1,6 +1,9 @@
-﻿using FinalExamScheduling.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using FinalExamScheduling.Model;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
@@ -8,199 +11,181 @@ namespace FinalExamScheduling.TabuSearchScheduling
     {
         public Context ctx;
 
-        public TabuList globalTabuList;
+        public TabuList tabuList;
 
+        SolutionCandidate currentSolution;
 
-        public TabuSearchWithVL(Context context)
+        SolutionCandidate bestSolution;
+
+        int examCount;
+        bool NextModeIsRandom = false;
+        bool TandemSearch;
+        int generationCycleCounter;
+        int idleIterCounter;
+        int tandemIdleRunCounter;
+        int shuffleCounter;
+        double prevBestScore;
+        List<SolutionCandidate> neighbouringSolutions; 
+
+        public TabuSearchWithVL(Context _ctx)
         {
-            ctx = context;
-            globalTabuList = new TabuList();
+            ctx = _ctx;
+            examCount = ctx.Students.Length;
+            NextModeIsRandom = false;
+            TandemSearch = TSParameters.Mode.Equals("Tandem");
+            generationCycleCounter = 0;
+            idleIterCounter = 0;
+            tandemIdleRunCounter = 0;
+            shuffleCounter = 0;
+            neighbouringSolutions = new List<SolutionCandidate>();
         }
 
-        public SolutionCandidate Start(List<double> iterationProgress)
+        public SolutionCandidate Start(List<double> iterationalProgress)
         {
-            CandidateCostCalculator costCalc = new CandidateCostCalculator(ctx);
-            NeighbourGeneratorWithVL neighbourGenerator = new NeighbourGeneratorWithVL(ctx);
+            CandidateCostCalculator costCalculator = new CandidateCostCalculator(ctx);
 
+            SolutionCandidate initialSolution = returnEvaluatedSolution(new RandomInitialSolutionGenerator(ctx).generateInitialSolution());
+            Console.WriteLine("##### Initial solution generated\n");
 
-            int examCount = ctx.Students.Length;
+            currentSolution = initialSolution.Clone();
+            bestSolution = initialSolution.Clone();
+            tabuList = new TabuList();
+            prevBestScore = currentSolution.Score;
 
-            bool NextModeIsRandom = false;
+            SolutionCandidate selectedNeighbour = null;
 
-            bool TandemSearch = TSParameters.Mode.Equals("Tandem");
+            Console.WriteLine(GetGlobalTerminationCriteriaState() ? "Temination criteria not met\n" : "Termination criteria met\n");
 
-            SolutionCandidate current;
-            SolutionCandidate bestSoFar;
-
-            //kiindulo megoldas generalasa
-            SolutionCandidate initialSolution = new RandomInitialSolutionGenerator(ctx).generateInitialSolution();
-            current = initialSolution;
-            bestSoFar = initialSolution;
-
-            //koltseg es VL kiszamitasa
-            current.Score = costCalc.Evaluate(current);
-            current.VL = new ViolationList().Evaluate(current);
-            if (TSParameters.LogIterationalProgress) iterationProgress.Add(current.Score);
-
-            //ciklus terminalasig
-            int iterCounter = 1;
-            int idleIterCounter = 0;
-            int tandemIdleRunCounter = 0;
-            int shuffleCounter = 0;
-            double prevBestScore = current.Score;
-
-            while ((idleIterCounter < TSParameters.AllowedIdleIterations && !TandemSearch) || (TandemSearch && (tandemIdleRunCounter < TSParameters.TandemIdleSwitches)) || (TSParameters.AllowShuffleWhenStuck && shuffleCounter < TSParameters.MaxShuffles))
+            while (GetGlobalTerminationCriteriaState())
             {
-                if (TSParameters.AllowShuffleWhenStuck && idleIterCounter >= TSParameters.AllowedIdleIterations && shuffleCounter < TSParameters.MaxShuffles)
-                {
-                    current = ShuffleStudents(current).Clone();
-                    shuffleCounter++;
-                    idleIterCounter = 0;
-                }
-
-                //szomszedok generalasa VL alapjan
-                SolutionCandidate bestNeighbour = new SolutionCandidate(current.Clone().Schedule);
-                SolutionCandidate aspirationCandidate = new SolutionCandidate(current.Clone().Schedule);
-
-                int failedIterations = 0;
-
-                //TODO: kivenni a módellenőrzést a cikluson kívülre + szépítés
-
+                currentSolution.VL = new ViolationList().Evaluate(currentSolution);
+                //Console.WriteLine("Current solution violations: " + currentSolution.VL.Violations.Count +  "\n");
+                
                 do
                 {
-                    SolutionCandidate[] neighbours = new SolutionCandidate[TSParameters.GeneratedCandidates];
-                    switch (TSParameters.Mode)
+                    if (neighbouringSolutions.Count < 2)
                     {
-                        case "Random":
-
-                            if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
-                            {
-                                return bestSoFar;
-                            }
-                            neighbours = neighbourGenerator.GenerateNeighboursRandom(current.Clone());
-                            //legjobb nem tabu szomszed kivalasztasa
-                            bestNeighbour = SelectBestFeasibleCandidate(neighbours);
-                            aspirationCandidate = SelectAspirationCandidate(neighbours);
-                            failedIterations++;
-                            break;
-                        case "Heuristic":
-                            if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
-                            {
-                                return bestSoFar;
-                            }
-                            neighbours = neighbourGenerator.GenerateNeighboursHeuristic(current.Clone());
-                            //legjobb nem tabu szomszed kivalasztasa
-                            bestNeighbour = SelectBestFeasibleCandidate(neighbours);
-                            aspirationCandidate = SelectAspirationCandidate(neighbours);
-                            failedIterations++;
-                            break;
-                        case "Tandem":
-                            if (idleIterCounter >= TSParameters.AllowedIdleIterations)
-                            {
-                                NextModeIsRandom = !NextModeIsRandom;
-                                idleIterCounter = 0;
-                                tandemIdleRunCounter++;
-                                
-                            }
-                            if (NextModeIsRandom)
-                            {
-                                if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
-                                {
-                                    NextModeIsRandom = false;
-                                    failedIterations = 0;
-                                    idleIterCounter = 0;
-                                    tandemIdleRunCounter++;
-                                }
-
-                                neighbours = neighbourGenerator.GenerateNeighboursRandom(current.Clone());
-                                //legjobb nem tabu szomszed kivalasztasa
-                                bestNeighbour = SelectBestFeasibleCandidate(neighbours);
-                                aspirationCandidate = SelectAspirationCandidate(neighbours);
-                                failedIterations++;
-                            }
-                            else
-                            {
-                                if (failedIterations > TSParameters.MaxFailedNeighbourGenerations)
-                                {
-                                    NextModeIsRandom = true;
-                                    failedIterations = 0;
-                                    idleIterCounter = 0;
-                                    tandemIdleRunCounter++;   
-                                }
-
-                                neighbours = neighbourGenerator.GenerateNeighboursHeuristic(current.Clone());
-                                //legjobb nem tabu szomszed kivalasztasa
-                                bestNeighbour = SelectBestFeasibleCandidate(neighbours);
-                                aspirationCandidate = SelectAspirationCandidate(neighbours);
-                                failedIterations++;
-                            }
-                            break;
-                        default:
-                            return bestSoFar;
-                            break;
+                        Console.WriteLine("### Neighbour generation started " + generationCycleCounter);
+                        neighbouringSolutions = GenerateNeighbours(currentSolution);
+                        generationCycleCounter++;
                     }
+
+                    else neighbouringSolutions.Remove(selectedNeighbour);
+
+
+                    selectedNeighbour = returnEvaluatedSolution(SelectBestCandidate());
+
+                    if(bestSolution.Score > selectedNeighbour.Score)
+                    {
+                        bestSolution = returnEvaluatedSolution(selectedNeighbour.Clone());
+                        Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable (BS)" : "Aspiration criteria met");
+                        break;
+                    }
+                    Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable" : "Tabu " + neighbouringSolutions.Count);
                 }
-                while (bestNeighbour == null && (!TandemSearch || (TandemSearch && tandemIdleRunCounter < TSParameters.TandemIdleSwitches)));
+                while(!IsFeasibleSolution(selectedNeighbour) && GetGlobalTerminationCriteriaState());
 
-                if (bestNeighbour == null) bestNeighbour = current;
+                Console.WriteLine("Score: " + selectedNeighbour.Score) ;
 
-                if (aspirationCandidate != null)
+                SolutionCandidate prevSolution = currentSolution;
+                currentSolution = selectedNeighbour;
+
+                IterationCountHandler(prevBestScore > bestSolution.Score);
+                prevBestScore = bestSolution.Score;
+
+                neighbouringSolutions.Clear();
+
+                tabuList.DecreaseIterationsLeft();
+
+                ExpandTabuList(prevSolution, currentSolution);
+
+                if (TSParameters.LogIterationalProgress) iterationalProgress.Add(currentSolution.Score);
+
+                //ha üres a legjobb megoldás VL listája, akkor a jelenleg implementált követelmények maximálisan optimalizálva lettek
+                if (bestSolution.VL.Violations.Count == 0)
                 {
-                    aspirationCandidate.VL = new ViolationList().Evaluate(aspirationCandidate);
+                    return bestSolution;
                 }
+
+                //Console.WriteLine(bestSolution.Score);
                 
-                //tabulista iteraciok csokkentese
-                globalTabuList.DecreaseIterationsLeft();
+            }
+            return bestSolution;
+        }
 
-                //tabulista kiegeszite
-                ExpandTabuList(current, bestNeighbour);
+        public SolutionCandidate returnEvaluatedSolution(SolutionCandidate solution)
+        {
+            CandidateCostCalculator calc = new CandidateCostCalculator(ctx);
+            solution.Score = calc.Evaluate(solution);
+            solution.VL = new ViolationList().Evaluate(solution);
+            return solution;
+        }
 
-                //jelenlegi beallitasa a legjobb szomszédra
-                current = bestNeighbour;
+        public void IterationCountHandler(bool improvement)
+        {
+            generationCycleCounter = 0;
 
-                current.VL = new ViolationList().Evaluate(current);
+            if (improvement)
+            {
+                Console.WriteLine("#IMPROVEMENT");
+                idleIterCounter = 0;
+                if(TandemSearch) tandemIdleRunCounter = 0;
+            }
+            else
+            {
+                Console.WriteLine("#NOBETTER " + idleIterCounter + ", " + tandemIdleRunCounter);
+                idleIterCounter++;
+                if (TandemSearch) tandemIdleRunCounter++;
+            }
+        }
 
-                if (TSParameters.LogIterationalProgress) iterationProgress.Add(current.Score);
+        //REVIEW
+        public bool GetGlobalTerminationCriteriaState() //Termination will be initiated when this returns false
+        {
+            return
+            (TandemSearch || idleIterCounter < TSParameters.AllowedIdleIterations)
+            &&
+            (!TandemSearch || tandemIdleRunCounter < TSParameters.TandemIdleSwitches)
+            &&
+            (!TSParameters.AllowShuffleWhenStuck || shuffleCounter < TSParameters.MaxShuffles)
+            &&
+            (generationCycleCounter < TSParameters.MaxFailedNeighbourGenerations)
+            &&
+            (bestSolution.Score > TSParameters.TargetScore)
+            ;
+        }
 
-                //legjobb megoldás frissítése ha jobb az új
-                if (current.Score < bestSoFar.Score) bestSoFar = current;
-
-                //AspirationCriteria ellenőrzése
-                if (aspirationCandidate != null && bestSoFar.Score > aspirationCandidate.Score)
+        public List<SolutionCandidate> GenerateNeighbours(SolutionCandidate current)
+        {
+            if (TandemSearch)
+            {
+                if(NextModeIsRandom)
                 {
-                    current = aspirationCandidate.Clone();
-                    bestSoFar = aspirationCandidate.Clone();
-                    globalTabuList.tabuList.Clear();
-                }
-
-                //ellenőrizzük, hogy javult-e a legjobb megoldás
-                if (bestSoFar.Score >= prevBestScore)
-                {
-                    idleIterCounter++;
+                    NextModeIsRandom = false;
+                    return GetNeighbours(current, "Random");
                 }
                 else
                 {
-                    idleIterCounter = 0;
-                    if (TandemSearch)
-                    {
-                        tandemIdleRunCounter = 0;
-                    }
+                    NextModeIsRandom= true;
+                    return GetNeighbours(current, "Heuristic");
                 }
-
-                //ha üres a legjobb megoldás VL listája, akkor a jelenleg implementált követelmények maximálisan optimalizálva lettek
-                if (bestSoFar.VL.Violations.Count == 0)
-                {
-                    return bestSoFar;
-                }
-
-                prevBestScore = bestSoFar.Score;
             }
-
-
-            bestSoFar.VL = new ViolationList().Evaluate(bestSoFar);
-
-            return bestSoFar;
+            else return GetNeighbours(current, TSParameters.Mode);
         }
+
+        public List<SolutionCandidate> GetNeighbours(SolutionCandidate current, string mode)
+        {
+            NeighbourGeneratorWithVL neighbourGenerator = new NeighbourGeneratorWithVL(ctx);
+            SolutionCandidate currentSolution = current.Clone();
+            SolutionCandidate[] neighbours = new SolutionCandidate[TSParameters.GeneratedCandidates];
+
+            neighbours = neighbourGenerator.GenerateNeighbours(currentSolution, mode);
+
+            return neighbours.ToList<SolutionCandidate>();
+        }
+
+        /*################################################################################*/
+        /*Rewrite from here*/
 
         //Exchange a given percentage of students with other ones, to possibly unstuck
         public SolutionCandidate ShuffleStudents(SolutionCandidate current)
@@ -224,44 +209,25 @@ namespace FinalExamScheduling.TabuSearchScheduling
             return shuffled;
         }
 
-        //Selects the best solution without tabu moves
-        public SolutionCandidate SelectBestFeasibleCandidate(SolutionCandidate[] neighbours)
+        //Selects the best solution from neighbours
+        public SolutionCandidate SelectBestCandidate()
         {
-            CandidateCostCalculator ccc = new CandidateCostCalculator(ctx);
+            CandidateCostCalculator calc = new CandidateCostCalculator(ctx);
             SolutionCandidate best = null;
-            foreach (SolutionCandidate candidate in neighbours)
-            {
-                if (best == null && IsFeasibleSolution(candidate))
-                {
-                    candidate.Score = ccc.Evaluate(candidate);
-                    best = candidate.Clone();
-                }
-                else if (IsFeasibleSolution(candidate))
-                {
-                    candidate.Score = ccc.Evaluate(candidate);
-                    if (candidate.Score < best.Score) best = candidate.Clone();
-                }
-            }
-            return best;
-        }
 
-        public SolutionCandidate SelectAspirationCandidate(SolutionCandidate[] neighbours)
-        {
-            CandidateCostCalculator ccc = new CandidateCostCalculator(ctx);
-            SolutionCandidate best = null;
-            foreach (SolutionCandidate candidate in neighbours)
+            //Console.WriteLine(neighbouringSolutions.Count == 0 ? "Elfogytak az s":"Van meg s " + neighbouringSolutions.Count );
+
+            foreach (SolutionCandidate candidate in neighbouringSolutions)
             {
-                if (best == null && !IsFeasibleSolution(candidate))
+                candidate.Score = calc.Evaluate(candidate);
+
+                if(best == null) best = candidate;
+                else
                 {
-                    candidate.Score = ccc.Evaluate(candidate);
-                    best = candidate.Clone();
-                }
-                else if (!IsFeasibleSolution(candidate))
-                {
-                    candidate.Score = ccc.Evaluate(candidate);
-                    if (candidate.Score < best.Score) best = candidate.Clone();
+                    if(best.Score > candidate.Score) best = candidate;
                 }
             }
+            
             return best;
         }
 
@@ -269,85 +235,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
         public bool IsFeasibleSolution(SolutionCandidate solution)
         {
             FinalExam[] exams = solution.Schedule.FinalExams;
-            foreach (TabuListElement tabu in globalTabuList.GetTabuList())
+            
+            foreach (TabuListElement tabu in tabuList.GetTabuList())
             {
                 if (tabu.TabuIterationsLeft > 0)
                 {
-                    switch (tabu.Attribute)
-                    {
-                        case "student":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].Student.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                        case "supervisor":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].Supervisor.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                        case "president":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].President.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                        case "secretary":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].Secretary.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                        case "member":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].Member.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                        case "examiner":
-                            for (int i = 0; i < exams.Length; i++)
-                            {
-                                if (i == tabu.ExamSlot)
-                                {
-                                    if (exams[i].Examiner.Name.Equals(tabu.Value))
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            break;
-                    }
+                    if (tabu.Exam.IsEqualExam(exams[tabu.ExamSlot])) return false;
                 }
             }
             return true;
@@ -357,35 +250,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
         public void ExpandTabuList(SolutionCandidate current, SolutionCandidate bestNeighbour)
         {
             int examCount = ctx.Students.Length;
+            FinalExam[] oldExams = current.Schedule.FinalExams;
+            FinalExam[] newExams = bestNeighbour.Schedule.FinalExams;
 
             for (int i = 0; i < examCount; i++)
             {
-                Schedule oldSchedule = current.Schedule.Clone();
-                Schedule newSchedule = bestNeighbour.Schedule.Clone();
-
-                if (!oldSchedule.FinalExams[i].Student.Name.Equals(newSchedule.FinalExams[i].Student.Name))
+                if (!oldExams[i].IsEqualExam(newExams[i]))
                 {
-                    globalTabuList.Add(new TabuListElement("student", oldSchedule.FinalExams[i].Student.Name, i));
-                }
-                if (!oldSchedule.FinalExams[i].Supervisor.Name.Equals(newSchedule.FinalExams[i].Supervisor.Name))
-                {
-                    globalTabuList.Add(new TabuListElement("supervisor", oldSchedule.FinalExams[i].Supervisor.Name, i));
-                }
-                if (!oldSchedule.FinalExams[i].President.Name.Equals(newSchedule.FinalExams[i].President.Name))
-                {
-                    globalTabuList.Add(new TabuListElement("president", oldSchedule.FinalExams[i].President.Name, i));
-                }
-                if (!oldSchedule.FinalExams[i].Secretary.Name.Equals(newSchedule.FinalExams[i].Secretary.Name))
-                {
-                    globalTabuList.Add(new TabuListElement("secretary", oldSchedule.FinalExams[i].Secretary.Name, i));
-                }
-                if (!oldSchedule.FinalExams[i].Member.Name.Equals(newSchedule.FinalExams[i].Member.Name))
-                {
-                    globalTabuList.Add(new TabuListElement("member", oldSchedule.FinalExams[i].Member.Name, i));
-                }
-                if (!oldSchedule.FinalExams[i].Examiner.Name.Equals(newSchedule.FinalExams[i].Examiner.Name))
-                {
-                    globalTabuList.Add(new TabuListElement("examiner", oldSchedule.FinalExams[i].Examiner.Name, i));
+                    tabuList.Add(new TabuListElement(oldExams[i].Clone(),i));
                 }
             }
         }

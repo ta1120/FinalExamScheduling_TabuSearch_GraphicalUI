@@ -36,6 +36,8 @@
 
         //Other parameters
 
+        public const int NeighbourDifferentAttributeCount = 50;
+
         public const int ExamBlockLength = 5;
 
         public static int WriteOutLimit = 60; //If scores under this are reached, the results will be written out to file. Set to negative value to write all results to file

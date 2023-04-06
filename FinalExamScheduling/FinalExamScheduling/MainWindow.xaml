@@ -62,13 +62,13 @@
                 <GroupBox x:Name="globalParametersBox" Header="Global algorithm parameters" Margin="233,10,466,444">
                     <Grid>
                         <Label x:Name="generatedCandidatesTitle" Content="Number of generated neighbours:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                        <TextBox x:Name="generatedCandidatesInput" HorizontalAlignment="Left" Margin="10,26,0,0" TextWrapping="Wrap" Text="15" VerticalAlignment="Top" Width="120" TextChanged="OnGeneratedCandidatesChanged"/>
+                        <TextBox x:Name="generatedCandidatesInput" HorizontalAlignment="Left" Margin="10,26,0,0" TextWrapping="Wrap" Text="20" VerticalAlignment="Top" Width="120" TextChanged="OnGeneratedCandidatesChanged"/>
                         <Label x:Name="allowedIdleIterationsTitle" Content="Allowed idle iterations:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,44,0,0"/>
-                        <TextBox x:Name="allowedIdleIterationsInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="10" VerticalAlignment="Top" Width="120" TextChanged="OnIdleIterationsChanged"/>
+                        <TextBox x:Name="allowedIdleIterationsInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="120" TextChanged="OnIdleIterationsChanged"/>
                         <Label x:Name="maxFailedNeighbourGenerationsTitle" Content="Max failed generation attempts:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,88,0,0"/>
                         <TextBox x:Name="maxFailedNeighbourGenerationsInput" HorizontalAlignment="Left" Margin="10,114,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnMaxFailedGenerationsChanged"/>
                         <Label x:Name="tandemIdleSwitchesTitle" Content="Allowed idle Tandem switches:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,132,0,0"/>
-                        <TextBox x:Name="tandemIdleSwitchesInput" HorizontalAlignment="Left" Margin="10,158,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnTandemSwitchesChanged"/>
+                        <TextBox x:Name="tandemIdleSwitchesInput" HorizontalAlignment="Left" Margin="10,158,0,0" TextWrapping="Wrap" Text="50" VerticalAlignment="Top" Width="120" TextChanged="OnTandemSwitchesChanged"/>
                         <Label x:Name="targetScoreTitle" Content="Target points:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,175,0,0"/>
                         <TextBox x:Name="targetScoreInput" HorizontalAlignment="Left" Margin="10,201,0,0" TextWrapping="Wrap" Text="40" VerticalAlignment="Top" Width="120" TextChanged="OnTargetScoreChanged"/>
                     </Grid>
@@ -80,16 +80,16 @@
                                 <Label x:Name="randomTabuLifeIterTitle" Content="Tabu element TTL:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                                 <TextBox x:Name="randomTTLInput" HorizontalAlignment="Left" Margin="10,26,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnRandomTTLChanged"/>
                                 <Label x:Name="randomTabuListLengthTitle" Content="Tabu list length:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,44,0,0"/>
-                                <TextBox x:Name="randomTabuListLengthInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120" TextChanged="OnRandomListLengthChanged"/>
+                                <TextBox x:Name="randomTabuListLengthInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnRandomListLengthChanged"/>
 
                             </Grid>
                         </GroupBox>
                         <GroupBox x:Name="heuristicSearchParametersBox" Header="Heuristic search" Margin="214,0,1,0" Height="129" VerticalAlignment="Top">
                             <Grid>
                                 <Label x:Name="heuristicTabuLifeIterTitle" Content="Tabu element TTL:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <TextBox x:Name="heuristicTTLInput" HorizontalAlignment="Left" Margin="10,26,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120" TextChanged="OnHeuristicTTLChanged"/>
+                                <TextBox x:Name="heuristicTTLInput" HorizontalAlignment="Left" Margin="10,26,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnHeuristicTTLChanged"/>
                                 <Label x:Name="heuristicTabuListLengthTitle" Content="Tabu list length:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,44,0,0"/>
-                                <TextBox x:Name="heuristicTabuListLengthInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120" TextChanged="OnHeuristicListLengthChanged"/>
+                                <TextBox x:Name="heuristicTabuListLengthInput" HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="5" VerticalAlignment="Top" Width="120" TextChanged="OnHeuristicListLengthChanged"/>
                             </Grid>
                         </GroupBox>
 

@@ -100,11 +100,11 @@
     <Compile Include="TabuSearchScheduling\RandomInitialSolutionGenerator.cs" />
     <Compile Include="TabuSearchScheduling\TabuList.cs" />
     <Compile Include="TabuSearchScheduling\TabuListElement.cs" />
+    <Compile Include="TabuSearchScheduling\TabuSearchWithVL.cs" />
     <Compile Include="TabuSearchScheduling\TS_Scores.cs" />
     <Compile Include="TabuSearchScheduling\SolutionCandidate.cs" />
     <Compile Include="TabuSearchScheduling\CandidateCostCalculator.cs" />
     <Compile Include="TabuSearchScheduling\TabuSearchScheduler.cs" />
-    <Compile Include="TabuSearchScheduling\TabuSearchWithVL.cs" />
     <Compile Include="TabuSearchScheduling\TSParameters.cs" />
     <Compile Include="TabuSearchScheduling\ViolationList.cs" />
   </ItemGroup>

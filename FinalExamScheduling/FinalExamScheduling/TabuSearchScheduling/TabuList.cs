@@ -11,29 +11,17 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public TabuList()
         {
-            switch (TSParameters.Mode)
-            {
-                case "Random":
-                    listLength = TSParameters.Random.TabuListLength;
-                    break;
-                case "Heuristic":
-                    listLength = TSParameters.Heuristic.TabuListLength;
-                    break;
-                default:
-                    listLength = TSParameters.Heuristic.TabuListLength;
-                    break;
-            }
-
             tabuList = new List<TabuListElement>();
+            ChangeListParametersForMode(TSParameters.Mode);
         }
 
-        public List<TabuListElement> GetTabuList() { return tabuList.ToList(); }
+        public List<TabuListElement> GetTabuList() { return tabuList; }
 
         public void Add(TabuListElement element)
         {
             foreach (TabuListElement tabu in tabuList)
             {
-                if (tabu.Attribute.Equals(element.Attribute) && tabu.Value.Equals(element.Value))
+                if (tabu.Exam.IsEqualExam(element.Exam) && tabu.ExamSlot.Equals(element.ExamSlot))
                 {
                     tabuList.Remove(tabu);
                     tabuList.Add(element);
@@ -53,7 +41,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             if (tabuList.Count > 0)
             {
                 foreach (TabuListElement element in tabuList) element.TabuIterationsLeft -= 1;
-                //TODO: remove elements reaching 0
+                
                 RemoveInactive();
             }
         }
@@ -70,11 +58,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
             {
                 tabuList.Remove(tabu);
             }
-        }
-
-        public void PrintTabuList()
-        {
-            foreach (TabuListElement element in tabuList) Console.WriteLine("Tabu: " + element.Attribute + " - " + element.Value + " - TTL:" + element.TabuIterationsLeft);
         }
 
         public void ChangeListParametersForMode(string mode)

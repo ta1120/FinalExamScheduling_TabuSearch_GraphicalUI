@@ -737,18 +737,22 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             int ctr = 1;
             Instructor currentPresident = schedule.FinalExams[0].President;
+            bool changed = false;
 
             for(int i = 0; i < schedule.FinalExams.Length; i++)
             {
                 if(ctr > 10)
                 {
+                    if(changed) score += TS_Scores.PresidentChangeLong;
+                    changed = false;
                     ctr = 1;
                     currentPresident = schedule.FinalExams[i].President;
+                    
                 }
                 else
                 {
                     ctr++;
-                    if (schedule.FinalExams[i].President.Name.Equals(currentPresident.Name)) score += TS_Scores.PresidentChangeLong;
+                    if (!schedule.FinalExams[i].President.Name.Equals(currentPresident.Name)) changed = true;
                 }
 
             }
@@ -760,18 +764,21 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             int ctr = 1;
             Instructor currentSecretary = schedule.FinalExams[0].Secretary;
+            bool changed = false;
 
             for (int i = 0; i < schedule.FinalExams.Length; i++)
             {
                 if (ctr > 10)
                 {
+                    if(changed) score = TS_Scores.SecretaryChangeLong;
+                    changed = false;
                     ctr = 1;
                     currentSecretary = schedule.FinalExams[i].Secretary;
                 }
                 else
                 {
                     ctr++;
-                    if (schedule.FinalExams[i].Secretary.Name.Equals(currentSecretary.Name)) score += TS_Scores.SecretaryChangeLong;
+                    if (!schedule.FinalExams[i].Secretary.Name.Equals(currentSecretary.Name)) changed = true;
                 }
 
             }

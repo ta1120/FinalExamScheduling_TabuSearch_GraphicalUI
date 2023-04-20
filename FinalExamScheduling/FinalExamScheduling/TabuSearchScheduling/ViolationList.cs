@@ -10,8 +10,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
     {
         public List<KeyValuePair<string, string>> Violations { get; set; }
 
-        //private Context ctx;
-
         public List<Func<Schedule, ViolationList>> ViolationFunctions;
 
         public ViolationList()

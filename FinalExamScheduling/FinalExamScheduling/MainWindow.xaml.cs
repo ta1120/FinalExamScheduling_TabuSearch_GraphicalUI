@@ -131,29 +131,46 @@ namespace FinalExamScheduling
             ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed); 
         }
 
+        private void ResetAfterRun()
+        {
+            algorithmRunning = false;
+            abortButton.IsEnabled = false;
+            parameterBox.IsEnabled = true;
+        }
+
+        private Thread CreateRunnerThread()
+        {
+            return new Thread(t =>
+            {
+                try 
+                {
+                    RunTabuSearch();
+                }
+                finally
+                {
+                    this.Dispatcher.Invoke(new Action(() => ResetAfterRun()));
+                }
+            })
+            { IsBackground = true };
+        }
+
         private void Run_Click(object sender, EventArgs e)
         {
             if (algorithmRunning)
             {
                 algorithmThread.Abort();
 
-                algorithmThread = new Thread(t =>
-                {
-                    RunTabuSearch();
-                })
-                { IsBackground = true };
+                algorithmThread = CreateRunnerThread();
             }
             else
             {
                 algorithmRunning = true;
-                algorithmThread = new Thread(t =>
-                {
-                    RunTabuSearch();
-                })
-                { IsBackground = true };
+                algorithmThread = CreateRunnerThread();
             }
+
             abortButton.IsEnabled = true;
             parameterBox.IsEnabled = false;
+
             algorithmThread.Start();
         }
 
@@ -163,9 +180,7 @@ namespace FinalExamScheduling
             {
                 algorithmThread.Abort();
             }
-            algorithmRunning = false;
-            abortButton.IsEnabled = false;
-            parameterBox.IsEnabled = true;
+            ResetAfterRun();
         }
         private void Abort_Click(object sender, EventArgs e)
         {
@@ -230,7 +245,7 @@ namespace FinalExamScheduling
             int limit;
             if (int.TryParse(writeOutLimitInput.Text, out limit))
             {
-                if(limit > 0 && limit <= 100) TSParameters.WriteOutLimit = limit;
+                if(limit > 0 && limit <= 10000) TSParameters.WriteOutLimit = limit;
                 else TSParameters.WriteOutLimit = 0;
             } 
             else TSParameters.WriteOutLimit = 0;

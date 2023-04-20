@@ -36,7 +36,7 @@
 
         //Other parameters
 
-        public const int NeighbourDifferentAttributeCount = 50;
+        public const int ViolationsToFixPerGeneration = 50;
 
         public const int ExamBlockLength = 5;
 

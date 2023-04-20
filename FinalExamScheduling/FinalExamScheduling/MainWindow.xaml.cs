@@ -93,7 +93,7 @@ namespace FinalExamScheduling
                     results.Add(solution.Score);
                     if (!solution.VL.ContainsHardViolation()) feasibleScheduleCount++;
 
-                    if (results.Count % 10 == 0) 
+                    if (results.Count % 5 == 0) 
                     {
                         sum = 0;
                         results.ForEach(s => sum += s);

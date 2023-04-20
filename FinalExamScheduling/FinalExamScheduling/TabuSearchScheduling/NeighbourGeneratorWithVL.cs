@@ -42,7 +42,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public ViolationList GetRandomViolationSubset(ViolationList violations)
         {
-            int modCount = TSParameters.NeighbourDifferentAttributeCount;
+            int modCount = TSParameters.ViolationsToFixPerGeneration;
 
             int violationCount = violations.Violations.Count;
 

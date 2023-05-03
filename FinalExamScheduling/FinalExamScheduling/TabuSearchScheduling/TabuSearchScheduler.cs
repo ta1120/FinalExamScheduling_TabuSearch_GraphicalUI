@@ -6,7 +6,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 {
     class TabuSearchScheduler
     {
-        public Context ctx;
+        private Context ctx;
 
 
         public TabuSearchScheduler(Context context)

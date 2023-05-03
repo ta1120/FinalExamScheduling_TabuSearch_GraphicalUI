@@ -52,7 +52,6 @@ namespace FinalExamScheduling
 
         }
 
-        //Based on the RunGenetic() function
         public void RunTabuSearch()
         {
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("# " + (DateTime.Now.ToString()))));
@@ -73,25 +72,25 @@ namespace FinalExamScheduling
 
             SolutionCandidate solution = scheduler.Run(iterationProgress);
             watch.Stop();
-            Schedule resultSchedule = solution.Schedule;
-            double penaltyScore = solution.Score;
+            Schedule resultSchedule = solution.schedule;
+            double penaltyScore = solution.score;
 
-            results.Add(solution.Score);
-            if (!solution.VL.ContainsHardViolation()) feasibleScheduleCount++;
+            results.Add(solution.score);
+            if (!solution.vl.ContainsHardViolation()) feasibleScheduleCount++;
 
             if (TSParameters.RestartUntilTargetReached)
             {
-                while (solution.Score > TSParameters.TargetScore)
+                while (solution.score > TSParameters.TargetScore)
                 {
                     iterationProgress.Clear();
                     watch.Restart();
                     solution = scheduler.Run(iterationProgress);
                     watch.Stop();
-                    resultSchedule = solution.Schedule;
-                    penaltyScore = solution.Score;
+                    resultSchedule = solution.schedule;
+                    penaltyScore = solution.score;
 
-                    results.Add(solution.Score);
-                    if (!solution.VL.ContainsHardViolation()) feasibleScheduleCount++;
+                    results.Add(solution.score);
+                    if (!solution.vl.ContainsHardViolation()) feasibleScheduleCount++;
 
                     if (results.Count % 5 == 0) 
                     {
@@ -122,6 +121,7 @@ namespace FinalExamScheduling
             minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
             double avgFinal = Math.Round((sum / results.Count), 2);
             avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avgFinal + " points"));
+            feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount * 100 / results.Count), 1) + "%"));
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
             resultBox.Dispatcher.Invoke(new Action(() => resultBox.ScrollIntoView(resultBox.SelectedItem)));
@@ -135,6 +135,7 @@ namespace FinalExamScheduling
         {
             algorithmRunning = false;
             abortButton.IsEnabled = false;
+            runButton.IsEnabled = true;
             parameterBox.IsEnabled = true;
         }
 
@@ -154,8 +155,20 @@ namespace FinalExamScheduling
             { IsBackground = true };
         }
 
+        /*
+         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+         * 
+         * From here on, the class only contains event handlers for the GUI controls
+         * 
+         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+         */
+
         private void Run_Click(object sender, EventArgs e)
         {
+            avgLabel.Content = "-";
+            minLabel.Content = "-";
+            feasiblePercentageLabel.Content = "-";
+
             if (algorithmRunning)
             {
                 algorithmThread.Abort();
@@ -169,6 +182,7 @@ namespace FinalExamScheduling
             }
 
             abortButton.IsEnabled = true;
+            runButton.IsEnabled = false;
             parameterBox.IsEnabled = false;
 
             algorithmThread.Start();
@@ -181,12 +195,12 @@ namespace FinalExamScheduling
                 algorithmThread.Abort();
             }
             ResetAfterRun();
+            runButton.IsEnabled = true;
         }
         private void Abort_Click(object sender, EventArgs e)
         {
             Abort();
         }
-
         private void OnModeSelectorChanged(object sender, SelectionChangedEventArgs e)
         {
             TSParameters.Mode = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string;
@@ -317,6 +331,12 @@ namespace FinalExamScheduling
             int n;
             if (int.TryParse(heuristicTabuListLengthInput.Text, out n)) TSParameters.Heuristic.TabuListLength = n;
             else TSParameters.Heuristic.TabuListLength = 1;
+        }
+        private void OnViolationFixCountChanged(object sender, TextChangedEventArgs args)
+        {
+            int n;
+            if (int.TryParse(violationCountInput.Text, out n)) TSParameters.ViolationsToFixPerGeneration = n;
+            else TSParameters.ViolationsToFixPerGeneration = 50;
         }
     }
 }

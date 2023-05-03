@@ -255,7 +255,7 @@
                                     <TextBox 
                                         x:Name="randomTTLInput" 
                                         TextWrapping="Wrap" 
-                                        Text="5" 
+                                        Text="10" 
                                         Width="120" 
                                         TextChanged="OnRandomTTLChanged"
                                         Grid.Row="1"
@@ -272,7 +272,7 @@
                                     <TextBox 
                                         x:Name="randomTabuListLengthInput" 
                                         TextWrapping="Wrap" 
-                                        Text="5" 
+                                        Text="10" 
                                         Width="120" 
                                         TextChanged="OnRandomListLengthChanged"
                                         Grid.Row="3"
@@ -386,7 +386,7 @@
                             <TextBox 
                                 x:Name="allowedIdleIterationsInput" 
                                 TextWrapping="Wrap" 
-                                Text="50" 
+                                Text="10" 
                                 Width="120" 
                                 TextChanged="OnIdleIterationsChanged"
                                 Grid.Row="3"
@@ -420,7 +420,7 @@
                             <TextBox 
                                 x:Name="tandemIdleSwitchesInput" 
                                 TextWrapping="Wrap" 
-                                Text="50"
+                                Text="10"
                                 Width="120" 
                                 TextChanged="OnTandemSwitchesChanged"
                                 Grid.Row="7"
@@ -456,7 +456,7 @@
                                 TextWrapping="Wrap" 
                                 Text="50"
                                 Width="120" 
-                                
+                                TextChanged="OnViolationFixCountChanged"
                                 Grid.Row="11"
                                 HorizontalAlignment="Left" 
                                 VerticalAlignment="Center" 

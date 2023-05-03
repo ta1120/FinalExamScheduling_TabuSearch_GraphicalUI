@@ -14,15 +14,15 @@ namespace FinalExamScheduling.TabuSearchScheduling
          * 
          */
 
-        public Context ctx;
+        private Context ctx;
 
-        public readonly List<Func<Schedule, double>> CostFunctions;
+        private readonly List<Func<Schedule, double>> costFunctions;
 
 
         public CandidateCostCalculator(Context context)
         {
             ctx = context;
-            CostFunctions = new List<Func<Schedule, double>>()
+            costFunctions = new List<Func<Schedule, double>>()
             {
                 GetWrongExaminerScore,
                 GetStudentDuplicatedScore,
@@ -70,25 +70,25 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public double[] GetFinalScores(Schedule sch)
         {
-            return CostFunctions.Select(cf => cf(sch)).ToList().ToArray();
+            return costFunctions.Select(cf => cf(sch)).ToList().ToArray();
         }
 
         public double Evaluate(SolutionCandidate cand)
         {
-            Schedule sch = cand.Schedule;
+            Schedule sch = cand.schedule;
 
             int score = 0;
 
             sch.Details = new FinalExamDetail[100];
 
-            var tasks = CostFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
+            var tasks = costFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
             Task.WaitAll(tasks);
             foreach (var task in tasks)
             {
                 score += (int)task.Result;
             }
 
-            cand.Score = score;
+            cand.score = score;
 
             return score;
         }
@@ -230,39 +230,19 @@ namespace FinalExamScheduling.TabuSearchScheduling
             {
                 if (sch.FinalExams[i].President != sch.FinalExams[i + 1].President)
                 {
-                    score += TS_Scores.PresidentChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 1].PresidentComment += $"President changed: {TS_Scores.PresidentChange}\n";
-                        sch.Details[i + 1].PresidentScore += TS_Scores.PresidentChange;
-                    }
+                    score += TS_Scores.PresidentChange;   
                 }
                 if (sch.FinalExams[i + 1].President != sch.FinalExams[i + 2].President)
                 {
                     score += TS_Scores.PresidentChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 2].PresidentComment += $"President changed: {TS_Scores.PresidentChange}\n";
-                        sch.Details[i + 2].PresidentScore += TS_Scores.PresidentChange;
-                    }
                 }
                 if (sch.FinalExams[i + 2].President != sch.FinalExams[i + 3].President)
                 {
                     score += TS_Scores.PresidentChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 3].PresidentComment += $"President changed: {TS_Scores.PresidentChange}\n";
-                        sch.Details[i + 3].PresidentScore += TS_Scores.PresidentChange;
-                    }
                 }
                 if (sch.FinalExams[i + 3].President != sch.FinalExams[i + 4].President)
                 {
                     score += TS_Scores.PresidentChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 4].PresidentComment += $"President changed: {TS_Scores.PresidentChange}\n";
-                        sch.Details[i + 4].PresidentScore += TS_Scores.PresidentChange;
-                    }
                 }
             }
             return score;
@@ -277,38 +257,18 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 if (sch.FinalExams[i].Secretary != sch.FinalExams[i + 1].Secretary)
                 {
                     score += TS_Scores.SecretaryChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 1].SecretaryComment += $"Secretary changed: {TS_Scores.SecretaryChange}\n";
-                        sch.Details[i + 1].SecretaryScore += TS_Scores.SecretaryChange;
-                    }
                 }
                 if (sch.FinalExams[i + 1].Secretary != sch.FinalExams[i + 2].Secretary)
                 {
                     score += TS_Scores.SecretaryChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 2].SecretaryComment += $"Secretary changed: {TS_Scores.SecretaryChange}\n";
-                        sch.Details[i + 2].SecretaryScore += TS_Scores.SecretaryChange;
-                    }
                 }
                 if (sch.FinalExams[i + 2].Secretary != sch.FinalExams[i + 3].Secretary)
                 {
                     score += TS_Scores.SecretaryChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 3].SecretaryComment += $"Secretary changed: {TS_Scores.SecretaryChange}\n";
-                        sch.Details[i + 3].SecretaryScore += TS_Scores.SecretaryChange;
-                    }
                 }
                 if (sch.FinalExams[i + 3].Secretary != sch.FinalExams[i + 4].Secretary)
                 {
                     score += TS_Scores.SecretaryChange;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i + 4].SecretaryComment += $"Secretary changed: {TS_Scores.SecretaryChange}\n";
-                        sch.Details[i + 4].SecretaryScore += TS_Scores.SecretaryChange;
-                    }
                 }
 
             }
@@ -589,14 +549,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             foreach (var fi in sch.FinalExams)
             {
-                if ((fi.Supervisor.Roles & Roles.President) == Roles.President && fi.Supervisor != fi.President)
+                if (((fi.Supervisor.Roles & Roles.President) == Roles.President && fi.Supervisor != fi.President) && fi.Supervisor != fi.Secretary && fi.Supervisor != fi.Member)
                 {
                     score += TS_Scores.SupervisorNotPresident;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].SupervisorComment += $"Not President: {TS_Scores.SupervisorNotPresident}\n";
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].SupervisorScore += TS_Scores.SupervisorNotPresident;
-                    }
                 }
             }
             return score;
@@ -607,14 +562,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             foreach (var fi in sch.FinalExams)
             {
-                if ((fi.Supervisor.Roles & Roles.Secretary) == Roles.Secretary && fi.Supervisor != fi.Secretary)
+                if (((fi.Supervisor.Roles & Roles.Secretary) == Roles.Secretary && fi.Supervisor != fi.Secretary) && fi.Supervisor != fi.President && fi.Supervisor != fi.Member)
                 {
                     score += TS_Scores.SupervisorNotSecretary;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].SupervisorComment += $"Not Secretary: {TS_Scores.SupervisorNotSecretary}\n";
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].SupervisorScore += TS_Scores.SupervisorNotSecretary;
-                    }
                 }
             }
             return score;
@@ -625,14 +575,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             foreach (var fi in sch.FinalExams)
             {
-                if ((fi.Examiner.Roles & Roles.President) == Roles.President && fi.Examiner != fi.President)
+                if (((fi.Examiner.Roles & Roles.President) == Roles.President && fi.Examiner != fi.President) && fi.Examiner != fi.Secretary && fi.Examiner != fi.Member)
                 {
                     score += TS_Scores.ExaminerNotPresident;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].ExaminerComment += $"Not President: {TS_Scores.ExaminerNotPresident}\n";
-                        sch.Details[Array.IndexOf(sch.FinalExams, fi)].ExaminerScore += TS_Scores.ExaminerNotPresident;
-                    }
                 }
             }
             return score;

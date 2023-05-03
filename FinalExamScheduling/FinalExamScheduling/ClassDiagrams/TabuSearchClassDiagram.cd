@@ -1,70 +1,70 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.CandidateCostCalculator">
-    <Position X="3.75" Y="3" Width="2.25" />
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.CandidateCostCalculator" Collapsed="true">
+    <Position X="10.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABgEAIABAAADAAClgAAAAiQAABAAIAgBYBIFAAIABAA=</HashCode>
+      <HashCode>ABgEAIABAgADAAClgAQAAiQAAhAAIEkBcBKFAAIABAA=</HashCode>
       <FileName>TabuSearchScheduling\CandidateCostCalculator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.NeighbourGeneratorWithVL">
-    <Position X="3.75" Y="0.75" Width="2.25" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.NeighbourGeneratorWithVL" Collapsed="true">
+    <Position X="15.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAIAACAAAAAAIAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAABAAAAQAAAAAAAAgAAAAAAIAAAECAAAAA=</HashCode>
       <FileName>TabuSearchScheduling\NeighbourGeneratorWithVL.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.RandomInitialSolutionGenerator">
-    <Position X="1" Y="5.75" Width="2.5" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.RandomInitialSolutionGenerator" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
       <FileName>TabuSearchScheduling\RandomInitialSolutionGenerator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate">
-    <Position X="6.25" Y="0.75" Width="1.75" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate" Collapsed="true">
+    <Position X="13.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAEAAAAAAAgAAAAAAAAAAEAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>TabuSearchScheduling\SolutionCandidate.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuList">
-    <Position X="10" Y="0.75" Width="1.5" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuList" Collapsed="true">
+    <Position X="15.5" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EAIIAACAAAAAAAAACAAAUAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAIIAACAAAAAAAAACAAAUAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TabuSearchScheduling\TabuList.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuListElement">
-    <Position X="2" Y="7.75" Width="1.5" />
+    <Position X="10.25" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAACAAgAAAAAAAAAAAAAAAAAAAAgAAAAABA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAAAABA=</HashCode>
       <FileName>TabuSearchScheduling\TabuListElement.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchScheduler">
-    <Position X="1.25" Y="0.75" Width="2.25" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchScheduler" Collapsed="true">
+    <Position X="12" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
       <FileName>TabuSearchScheduling\TabuSearchScheduler.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchWithVL">
-    <Position X="1.25" Y="2.75" Width="2.25" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchWithVL" Collapsed="true">
+    <Position X="13.75" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIAAAAAAACIAAAAAAAAQAAAAQAAgAAAAIAAAAACAAAA=</HashCode>
+      <HashCode>AACAEAAAQCgAAAAACIAQAAiAUoAgAAAAIAAAAAACgkE=</HashCode>
       <FileName>TabuSearchScheduling\TabuSearchWithVL.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.TS_Scores">
-    <Position X="10" Y="4" Width="1.5" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TS_Scores" Collapsed="true">
+    <Position X="15.5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAQAAAAAEAECIAAgAAAEgAECAAAIAgACRAIBBQACAQ=</HashCode>
+      <HashCode>QCA4AAAEAEAECIAIgAAAEgAECAAAIAgACRBIBBQACAQ=</HashCode>
       <FileName>TabuSearchScheduling\TS_Scores.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.TSParameters">
-    <Position X="8.25" Y="0.75" Width="1.5" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TSParameters" Collapsed="true">
+    <Position X="10.25" Y="3.75" Width="1.5" />
     <Compartments>
       <Compartment Name="Nested Types" Collapsed="false" />
     </Compartments>
@@ -81,75 +81,83 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAVBIzECAIQgAAAIAgAAVAIAIAggAUAAAAiAIAAAIAA=</HashCode>
+      <HashCode>AAVBIzECQIQgAAAIAwAAlAIAIAggAUAAAAiAIAAAIAA=</HashCode>
       <FileName>TabuSearchScheduling\TSParameters.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.TabuSearchScheduling.ViolationList">
-    <Position X="6.25" Y="3.25" Width="1.75" />
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.ViolationList" Collapsed="true">
+    <Position X="12" Y="3.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ABAAAAiAACBAAAIAAAQAgoAAAAAgggAAQgAAQRAAIkA=</HashCode>
+      <HashCode>ARoAAEiAACBAAAIAAAQCgoAAACBoggAAQgAAQRAEIkA=</HashCode>
       <FileName>TabuSearchScheduling\ViolationList.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FinalExamScheduling.Model.Context" Collapsed="true">
-    <Position X="12.5" Y="2" Width="1.5" />
+    <Position X="12" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQIQAAAAAIAAAAACAAAgAAAIAAAAAAAQAAAGABAABAA=</HashCode>
+      <HashCode>AQIQAAAAAIAAAAACAAAgAAAIAAAAAAAYAAAGABAABAA=</HashCode>
       <FileName>Model\Context.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.Model.Course" Collapsed="true">
-    <Position X="14.75" Y="3" Width="1.5" />
+  <Class Name="FinalExamScheduling.Model.Course">
+    <Position X="1" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAAAQAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\Course.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FinalExamScheduling.Model.Entity" Collapsed="true">
-    <Position X="14.75" Y="0.75" Width="1.5" />
+    <Position X="4.25" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\Entity.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FinalExamScheduling.Model.ExcelHelper" Collapsed="true">
-    <Position X="12.5" Y="4" Width="1.5" />
+    <Position X="13.75" Y="0.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAQAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAACAAAAAAA=</HashCode>
       <FileName>Model\ExcelHelper.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.Model.FinalExam" Collapsed="true">
-    <Position X="14.75" Y="2" Width="1.5" />
+  <Class Name="FinalExamScheduling.Model.FinalExam">
+    <Position X="3.25" Y="2" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAIAABQAAABAAAAAAABAAgAAAIAAAAAAAAAAAAABQ=</HashCode>
+      <HashCode>gAAAIAABQAAABAAAAAAABAAgAAAIAAAAAAAAAAAAABQ=</HashCode>
       <FileName>Model\FinalExam.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Examiner" />
+      <Field Name="President" />
+      <Field Name="Member" />
+      <Field Name="Secretary" />
+      <Field Name="Student" />
+      <Field Name="Supervisor" />
+    </ShowAsAssociation>
   </Class>
-  <Class Name="FinalExamScheduling.Model.Instructor" Collapsed="true">
-    <Position X="14.75" Y="5" Width="1.5" />
+  <Class Name="FinalExamScheduling.Model.Instructor">
+    <Position X="5.5" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAABAAQAAgAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\Instructor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="FinalExamScheduling.Model.Schedule" Collapsed="true">
-    <Position X="12.5" Y="3" Width="1.5" />
+    <Position X="12" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAABAABAAAAgAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
       <FileName>Model\Schedule.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="FinalExamScheduling.Model.Student" Collapsed="true">
-    <Position X="14.75" Y="4" Width="1.5" />
+  <Class Name="FinalExamScheduling.Model.Student">
+    <Position X="7.75" Y="2" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAAAAAAAAIRAAAAAAQAAAAAAAAAAAAA=</HashCode>
       <FileName>Model\Student.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Enum Name="FinalExamScheduling.Model.Roles" Collapsed="true">
-    <Position X="12.5" Y="5" Width="1.5" />
+    <Position X="10.25" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAABAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAABA=</HashCode>
       <FileName>Model\Instructor.cs</FileName>

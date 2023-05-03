@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.CandidateCostCalculator">
+    <Position X="21.5" Y="4.25" Width="3.25" />
+    <Members>
+      <Method Name="GetExaminerNotAvailableScore" Hidden="true" />
+      <Method Name="GetExaminerNotPresidentScore" Hidden="true" />
+      <Method Name="GetFinalScores" Hidden="true" />
+      <Method Name="GetMemberNotAvailableScore" Hidden="true" />
+      <Method Name="GetMemberNotExaminerScore" Hidden="true" />
+      <Method Name="GetMemberWorkloadBadScore" Hidden="true" />
+      <Method Name="GetMemberWorkloadWorseScore" Hidden="true" />
+      <Method Name="GetMemberWorkloadWorstScore" Hidden="true" />
+      <Method Name="GetPresidentChangeLongScore" Hidden="true" />
+      <Method Name="GetPresidentChangeScore" Hidden="true" />
+      <Method Name="GetPresidentIsMemberScore" Hidden="true" />
+      <Method Name="GetPresidentIsSecretaryScore" Hidden="true" />
+      <Method Name="GetPresidentNotAvailableScore" Hidden="true" />
+      <Method Name="GetPresidentWorkloadBadScore" Hidden="true" />
+      <Method Name="GetPresidentWorkloadWorseScore" Hidden="true" />
+      <Method Name="GetPresidentWorkloadWorstScore" Hidden="true" />
+      <Method Name="GetSecretaryChangeLongScore" Hidden="true" />
+      <Method Name="GetSecretaryChangeScore" Hidden="true" />
+      <Method Name="GetSecretaryIsMemberScore" Hidden="true" />
+      <Method Name="GetSecretaryNotAvailableScore" Hidden="true" />
+      <Method Name="GetSecretaryNotExaminerScore" Hidden="true" />
+      <Method Name="GetSecretaryWorkloadBadScore" Hidden="true" />
+      <Method Name="GetSecretaryWorkloadWorseScore" Hidden="true" />
+      <Method Name="GetSecretaryWorkloadWorstScore" Hidden="true" />
+      <Method Name="GetStudentDuplicatedScore" Hidden="true" />
+      <Method Name="GetSupervisorNotAvailableScore" Hidden="true" />
+      <Method Name="GetSupervisorNotExaminerScore" Hidden="true" />
+      <Method Name="GetSupervisorNotMemberScore" Hidden="true" />
+      <Method Name="GetSupervisorNotPresidentScore" Hidden="true" />
+      <Method Name="GetSupervisorNotSecretaryScore" Hidden="true" />
+      <Method Name="GetWrongExaminerScore" Hidden="true" />
+      <Method Name="GetWrongSupervisorScore" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ABgEAIABAgADAAChgAQABiQAAhAAIEkBcBKFAAIABAA=</HashCode>
+      <FileName>TabuSearchScheduling\CandidateCostCalculator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.NeighbourGeneratorWithVL">
+    <Position X="17.75" Y="1.5" Width="7" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAAgAAAAIAIAAAECAAAAA=</HashCode>
+      <FileName>TabuSearchScheduling\NeighbourGeneratorWithVL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.RandomInitialSolutionGenerator">
+    <Position X="21.5" Y="7.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAIAAAAAAAAAA=</HashCode>
+      <FileName>TabuSearchScheduling\RandomInitialSolutionGenerator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate">
+    <Position X="11.75" Y="10" Width="4.75" />
+    <Members>
+      <Method Name="Clone" Hidden="true" />
+    </Members>
+    <AssociationLine Name="vl" Type="FinalExamScheduling.TabuSearchScheduling.ViolationList">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.787" Y="0.133" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAIAAAAAAAAAABAAAAAAAEAABA=</HashCode>
+      <FileName>TabuSearchScheduling\SolutionCandidate.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="vl" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuList">
+    <Position X="17.75" Y="4.25" Width="3.5" />
+    <AssociationLine Name="tabuElements" Type="FinalExamScheduling.TabuSearchScheduling.TabuListElement">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-2.765" Y="0.175" Height="0.182" Width="2.61" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>EAIIAACAIAAAAAAAAAAAQgAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TabuSearchScheduling\TabuList.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="tabuElements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuListElement">
+    <Position X="17.75" Y="7.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAAAAAAAAABAAAAAAAAAABA=</HashCode>
+      <FileName>TabuSearchScheduling\TabuListElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchScheduler">
+    <Position X="11.75" Y="1.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAI=</HashCode>
+      <FileName>TabuSearchScheduling\TabuSearchScheduler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TabuSearchWithVL">
+    <Position X="11.75" Y="4.25" Width="5.5" />
+    <AssociationLine Name="tabuList" Type="FinalExamScheduling.TabuSearchScheduling.TabuList" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="17.25" Y="7.235" />
+        <Point X="18.594" Y="7.235" />
+        <Point X="18.594" Y="6.767" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="currentSolution" Type="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate" FixedFromPoint="true">
+      <Path>
+        <Point X="16.375" Y="9.459" />
+        <Point X="16.375" Y="10" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.275" Y="0.206" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="bestSolution" Type="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate" FixedFromPoint="true">
+      <Path>
+        <Point X="15.188" Y="9.459" />
+        <Point X="15.188" Y="10" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.119" Y="0.195" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="neighbouringSolutions" Type="FinalExamScheduling.TabuSearchScheduling.SolutionCandidate" FixedFromPoint="true">
+      <Path>
+        <Point X="12" Y="9.459" />
+        <Point X="12" Y="10" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-3.161" Y="0.206" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AACAEAAAQCAACAAACIAQAAiAUoAgAAAAYAAAAAAKAkE=</HashCode>
+      <FileName>TabuSearchScheduling\TabuSearchWithVL.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="tabuList" />
+      <Field Name="currentSolution" />
+      <Field Name="bestSolution" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="neighbouringSolutions" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TS_Scores" Collapsed="true">
+    <Position X="15.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCA4AAAEAEAECIAIgAAAEgAECAAAIAgACRBIBBQACAQ=</HashCode>
+      <FileName>TabuSearchScheduling\TS_Scores.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.TSParameters" Collapsed="true">
+    <Position X="15.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAVBIzECQIQgAAAIAwAAlAIAIAggAUAAAAiAIAAAIAA=</HashCode>
+      <FileName>TabuSearchScheduling\TSParameters.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.TabuSearchScheduling.ViolationList">
+    <Position X="18.75" Y="9.5" Width="6" />
+    <Members>
+      <Method Name="GetExaminerNotAvailableViolations" Hidden="true" />
+      <Method Name="GetExaminerNotPresidentViolations" Hidden="true" />
+      <Method Name="GetMemberNotAvailableViolations" Hidden="true" />
+      <Method Name="GetMemberNotExaminerViolations" Hidden="true" />
+      <Method Name="GetMemberWorkloadViolations" Hidden="true" />
+      <Method Name="GetPresidentChangeLongViolations" Hidden="true" />
+      <Method Name="GetPresidentChangeViolations" Hidden="true" />
+      <Method Name="GetPresidentIsMemberViolations" Hidden="true" />
+      <Method Name="GetPresidentIsSecretaryViolations" Hidden="true" />
+      <Method Name="GetPresidentNotAvailableViolations" Hidden="true" />
+      <Method Name="GetPresidentWorkloadViolations" Hidden="true" />
+      <Method Name="GetSecretaryChangeLongViolations" Hidden="true" />
+      <Method Name="GetSecretaryChangeViolations" Hidden="true" />
+      <Method Name="GetSecretaryIsMemberViolations" Hidden="true" />
+      <Method Name="GetSecretaryNotAvailableViolations" Hidden="true" />
+      <Method Name="GetSecretaryNotExaminerViolations" Hidden="true" />
+      <Method Name="GetSecretaryWorkloadViolations" Hidden="true" />
+      <Method Name="GetStudentDuplicatedViolations" Hidden="true" />
+      <Method Name="GetSupervisorNotAvailableViolations" Hidden="true" />
+      <Method Name="GetSupervisorNotExaminerViolations" Hidden="true" />
+      <Method Name="GetSupervisorNotMemberViolations" Hidden="true" />
+      <Method Name="GetSupervisorNotPresidentViolations" Hidden="true" />
+      <Method Name="GetSupervisorNotSecretaryViolations" Hidden="true" />
+      <Method Name="GetWrongExaminerViolations" Hidden="true" />
+      <Method Name="GetWrongSupervisorViolations" Hidden="true" />
+      <Method Name="printViolations" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ARoAAEiAACBAAAIAAAQCgoAAACBoggAAQgAAQRAEIkA=</HashCode>
+      <FileName>TabuSearchScheduling\ViolationList.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

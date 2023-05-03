@@ -36,7 +36,7 @@
 
         //Other parameters
 
-        public const int ViolationsToFixPerGeneration = 50;
+        public static int ViolationsToFixPerGeneration = 50;
 
         public const int ExamBlockLength = 5;
 

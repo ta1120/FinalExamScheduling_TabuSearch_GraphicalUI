@@ -8,9 +8,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
 {
     class ViolationList
     {
-        public List<KeyValuePair<string, string>> Violations { get; set; }
+        public List<KeyValuePair<string, string>> Violations;
 
-        public List<Func<Schedule, ViolationList>> ViolationFunctions;
+        private List<Func<Schedule, ViolationList>> ViolationFunctions;
 
         public ViolationList()
         {
@@ -60,7 +60,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public ViolationList Evaluate(SolutionCandidate cand)
         {
-            Schedule sch = cand.Schedule;
+            Schedule sch = cand.schedule;
 
             ViolationList vi = new ViolationList();
 

@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="FinalExamScheduling.Model.Context">
+    <Position X="13.25" Y="4.25" Width="3.25" />
+    <Members>
+      <Field Name="FillDetails" Hidden="true" />
+      <Field Name="RandStudents" Hidden="true" />
+      <Field Name="Rnd" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AQIQAAAAAIAAAAACAAAgAAAIAAAAAAAYAAAGABAABAA=</HashCode>
+      <FileName>Model\Context.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.Course" HideInheritanceLine="true">
+    <Position X="17.75" Y="8.25" Width="2" />
+    <AssociationLine Name="Instructors" Type="FinalExamScheduling.Model.Instructor">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.867" Y="1.818" Height="0.182" Width="1.787" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAQAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Course.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="Instructors" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.Entity">
+    <Position X="13.25" Y="8.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Entity.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.ExcelHelper">
+    <Position X="13.25" Y="2.5" Width="3.25" />
+    <Members>
+      <Method Name="GetGreen" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Model\ExcelHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.FinalExam" HideInheritanceLine="true">
+    <Position X="22.5" Y="4.75" Width="2.75" />
+    <AssociationLine Name="Student" Type="FinalExamScheduling.Model.Student" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="22.75" Y="4.75" />
+        <Point X="22.75" Y="4.238" />
+        <Point X="21.932" Y="4.238" />
+        <Point X="21.932" Y="3.405" />
+        <Point X="19.75" Y="3.405" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Examiner" Type="FinalExamScheduling.Model.Instructor" FixedToPoint="true">
+      <Path>
+        <Point X="22.5" Y="6.125" />
+        <Point X="20.25" Y="6.125" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Member" Type="FinalExamScheduling.Model.Instructor" FixedToPoint="true">
+      <Path>
+        <Point X="22.5" Y="5.812" />
+        <Point X="20.25" Y="5.812" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="President" Type="FinalExamScheduling.Model.Instructor" FixedToPoint="true">
+      <Path>
+        <Point X="22.5" Y="5.188" />
+        <Point X="20.25" Y="5.188" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Secretary" Type="FinalExamScheduling.Model.Instructor" FixedToPoint="true">
+      <Path>
+        <Point X="22.5" Y="5.5" />
+        <Point X="20.25" Y="5.5" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="Supervisor" Type="FinalExamScheduling.Model.Instructor" FixedToPoint="true">
+      <Path>
+        <Point X="22.5" Y="4.875" />
+        <Point X="20.25" Y="4.875" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>gAAAIAABQAAABAAAAAAABAAgAAAIAAAAAAAAAAAAABQ=</HashCode>
+      <FileName>Model\FinalExam.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Student" />
+      <Field Name="Examiner" />
+      <Field Name="Member" />
+      <Field Name="President" />
+      <Field Name="Secretary" />
+      <Field Name="Supervisor" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.Instructor" HideInheritanceLine="true">
+    <Position X="18.25" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAQAAgAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Instructor.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Roles" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.Schedule">
+    <Position X="22.25" Y="2.5" Width="2.75" />
+    <Members>
+      <Field Name="Details" Hidden="true" />
+    </Members>
+    <AssociationLine Name="FinalExams" Type="FinalExamScheduling.Model.FinalExam">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.69" Y="0.35" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAABAAAAgAAAAAAAAAAAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Schedule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="FinalExams" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="FinalExamScheduling.Model.Student" HideInheritanceLine="true">
+    <Position X="17.75" Y="2.5" Width="2" />
+    <AssociationLine Name="ExamCourse" Type="FinalExamScheduling.Model.Course">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-1.442" Y="3.633" Height="0.182" Width="1.326" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAAAAAAAIRAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Student.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="ExamCourse" />
+    </ShowAsAssociation>
+  </Class>
+  <Enum Name="FinalExamScheduling.Model.Roles">
+    <Position X="20.25" Y="6.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAAAAAAAAAAAAAAgAAAIAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Model\Instructor.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

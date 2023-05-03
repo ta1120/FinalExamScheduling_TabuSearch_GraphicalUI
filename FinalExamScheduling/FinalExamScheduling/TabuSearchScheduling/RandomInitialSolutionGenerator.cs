@@ -5,14 +5,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
 {
     class RandomInitialSolutionGenerator
     {
-        public Context ctx;
+        private Context ctx;
 
         public RandomInitialSolutionGenerator(Context context)
         {
             ctx = context;
         }
 
-        public SolutionCandidate generateInitialSolution()
+        public SolutionCandidate GenerateInitialSolution()
         {
             Random rnd = new Random();
 

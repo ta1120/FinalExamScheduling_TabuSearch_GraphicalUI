@@ -4,21 +4,21 @@ namespace FinalExamScheduling.TabuSearchScheduling
 {
     class SolutionCandidate
     {
-        public Schedule Schedule;
+        public Schedule schedule;
 
-        public double Score;
+        public double score;
 
-        public ViolationList VL;
+        public ViolationList vl;
 
         public SolutionCandidate(Schedule sch)
         {
-            Schedule = sch.Clone();
-            Score = -1;
+            schedule = sch.Clone();
+            score = -1;
         }
 
         public SolutionCandidate Clone()
         {
-            return new SolutionCandidate(Schedule.Clone()) { VL = VL, Score = Score };
+            return new SolutionCandidate(schedule.Clone()) { vl = vl, score = score };
         }
 
     }

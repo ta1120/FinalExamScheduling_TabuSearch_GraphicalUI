@@ -44,13 +44,13 @@ namespace FinalExamScheduling.TabuSearchScheduling
         {
             int modCount = TSParameters.ViolationsToFixPerGeneration;
 
-            int violationCount = violations.Violations.Count;
+            int violationCount = violations.violations.Count;
 
             if (modCount >= violationCount) return violations;
 
             ViolationList partialViolations  = new ViolationList();
 
-            foreach (KeyValuePair<string, string> v in violations.Violations)
+            foreach (KeyValuePair<string, string> v in violations.violations)
             {
                 if (1 > modCount) break;
 
@@ -81,7 +81,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
         public SolutionCandidate FixViolations_Heuristic(SolutionCandidate candidate, ViolationList partialViolations) 
         {
             Random rand = new Random();
-            foreach (KeyValuePair<string, string> v in partialViolations.Violations)
+            foreach (KeyValuePair<string, string> v in partialViolations.violations)
             {
                 if (v.Key.Equals("supervisorAvailability"))
                 {
@@ -275,7 +275,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             //Trying to fix soft violations only after no hard ones left
             if (TSParameters.OptimizeSoftConstraints && (!partialViolations.ContainsHardViolation() || !TSParameters.FixAllHardFirst))
             {
-                foreach (KeyValuePair<string, string> v in partialViolations.Violations)
+                foreach (KeyValuePair<string, string> v in partialViolations.violations)
                 {
                     if (v.Key.Equals("supervisorNotPresident"))
                     {
@@ -291,12 +291,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].Supervisor.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Secretary = candidate.schedule.FinalExams[index].Supervisor;
                     }
-                    else if (v.Key.Equals("examinerNotPresident"))
+                    else if (v.Key.Equals("presidentNotExaminer"))
                     {
                         string[] val = v.Value.Split(';');
                         int index = int.Parse(val[0]);
                         string name = val[1];
-                        if (candidate.schedule.FinalExams[index].Examiner.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].President = candidate.schedule.FinalExams[index].Examiner;
+                        if (candidate.schedule.FinalExams[index].President.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Examiner = candidate.schedule.FinalExams[index].President;
                     }
                     else if (v.Key.Equals("secretaryNotExaminer"))
                     {
@@ -362,7 +362,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             //Trying to fix soft violations only when there are no hard ones left
             if (TSParameters.OptimizeSoftConstraints && (!partialViolations.ContainsHardViolation() || !TSParameters.FixAllHardFirst))
             {
-                foreach (KeyValuePair<string, string> v in partialViolations.Violations)
+                foreach (KeyValuePair<string, string> v in partialViolations.violations)
                 {
                     if (v.Key.Equals("presidentWorkload"))
                     {
@@ -448,11 +448,43 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                         }
                     }
+                    /*
+                    else if (v.Key.Equals("presidentChangeLong"))
+                    {
+                        string[] data = v.Value.Split(';');
+                        int index = int.Parse(data[0]);
+                        string name = data[1];
+                        if (candidate.schedule.FinalExams[index - 1].President.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
+                        {
+                            int x = rand.Next(0, ctx.Presidents.Length);
+                            while (!ctx.Presidents[x].Availability[index])
+                            {
+                                x = rand.Next(0, ctx.Presidents.Length);
+                            }
+                            candidate.schedule.FinalExams[index].President = ctx.Presidents[x];
+                        }
+                    }
+                    else if (v.Key.Equals("secretaryChangeLong"))
+                    {
+                        string[] data = v.Value.Split(';');
+                        int index = int.Parse(data[0]);
+                        string name = data[1];
+                        if (candidate.schedule.FinalExams[index - 1].Secretary.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
+                        {
+                            int x = rand.Next(0, ctx.Secretaries.Length);
+                            while (!ctx.Secretaries[x].Availability[index])
+                            {
+                                x = rand.Next(0, ctx.Secretaries.Length);
+                            }
+                            candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
+                        }
+                    }
+                    */
                 }
             }
 
             //Hard violations
-            foreach (KeyValuePair<string, string> v in partialViolations.Violations)
+            foreach (KeyValuePair<string, string> v in partialViolations.violations)
             {
                 if (v.Key.Equals("supervisorAvailability"))
                 {

@@ -47,19 +47,18 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 GetMemberWorkloadWorstScore,
                 GetMemberWorkloadWorseScore,
                 GetMemberWorkloadBadScore,
-                
-                GetSupervisorNotPresidentScore,
-                GetSupervisorNotSecretaryScore,
-                GetExaminerNotPresidentScore,
 
                 GetPresidentIsSecretaryScore,
                 GetPresidentIsMemberScore,
                 GetSecretaryIsMemberScore,
 
-                GetSecretaryNotExaminerScore,
-                GetMemberNotExaminerScore,
+                GetSupervisorNotPresidentScore,
+                GetSupervisorNotSecretaryScore,
                 GetSupervisorNotMemberScore,
                 GetSupervisorNotExaminerScore,
+                GetPresidentNotExaminerScore,
+                GetSecretaryNotExaminerScore,
+                GetMemberNotExaminerScore,
 
                 GetWrongSupervisorScore
 
@@ -99,7 +98,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (var fe in sch.FinalExams)
             {
-                if (!fe.Student.ExamCourse.Instructors.ToArray().Contains(fe.Examiner)) score += TS_Scores.WrongExaminer;
+                if (!fe.Student.ExamCourse.Instructors.Contains(fe.Examiner)) score += TS_Scores.WrongExaminer;
             }
 
             return score;
@@ -570,14 +569,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
             return score;
         }
 
-        public double GetExaminerNotPresidentScore(Schedule sch)
+        public double GetPresidentNotExaminerScore(Schedule sch)
         {
             double score = 0;
             foreach (var fi in sch.FinalExams)
             {
-                if (((fi.Examiner.Roles & Roles.President) == Roles.President && fi.Examiner != fi.President) && fi.Examiner != fi.Secretary && fi.Examiner != fi.Member)
+                if (!fi.President.Name.Equals(fi.Examiner.Name) && fi.Student.ExamCourse.Instructors.Contains(fi.President))
                 {
-                    score += TS_Scores.ExaminerNotPresident;
+                    score += TS_Scores.PresidentNotExaminer;
                 }
             }
             return score;

@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="FinalExamScheduling.MainWindow">
+    <Position X="4.75" Y="0.5" Width="3.25" />
+    <Members>
+      <Property Name="_MainWindow" Hidden="true" />
+      <Method Name="OnGeneratedCandidatesChanged" Hidden="true" />
+      <Method Name="OnHardFirstCBChecked" Hidden="true" />
+      <Method Name="OnHardFirstCBUnchecked" Hidden="true" />
+      <Method Name="OnHeuristicListLengthChanged" Hidden="true" />
+      <Method Name="OnHeuristicTTLChanged" Hidden="true" />
+      <Method Name="OnIdleIterationsChanged" Hidden="true" />
+      <Method Name="OnMaxFailedGenerationsChanged" Hidden="true" />
+      <Method Name="OnMaxShufflesChanged" Hidden="true" />
+      <Method Name="OnModeSelectorChanged" Hidden="true" />
+      <Method Name="OnRandomListLengthChanged" Hidden="true" />
+      <Method Name="OnRandomTTLChanged" Hidden="true" />
+      <Method Name="OnRestartCBChecked" Hidden="true" />
+      <Method Name="OnRestartCBUnchecked" Hidden="true" />
+      <Method Name="OnShuffleCBChecked" Hidden="true" />
+      <Method Name="OnShuffleCBUnchecked" Hidden="true" />
+      <Method Name="OnShufflePercentageChanged" Hidden="true" />
+      <Method Name="OnSoftConstCBChecked" Hidden="true" />
+      <Method Name="OnSoftConstCBUnchecked" Hidden="true" />
+      <Method Name="OnTandemSwitchesChanged" Hidden="true" />
+      <Method Name="OnTargetScoreChanged" Hidden="true" />
+      <Method Name="OnViolationFixCountChanged" Hidden="true" />
+      <Method Name="OnWriteOutCBChecked" Hidden="true" />
+      <Method Name="OnWriteOutCBUnchecked" Hidden="true" />
+      <Method Name="OnWriteoutLimitChanged" Hidden="true" />
+      <Method Name="SetShuffleCount" Hidden="true" />
+      <Method Name="SetShufflePercentage" Hidden="true" />
+      <Method Name="SetWriteOutLimit" Hidden="true" />
+      <Property Name="WinApp" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAADIAAABEAA4CEABIABBwAADIAYEBpAggAAFAoASIA=</HashCode>
+      <FileName>GraphicalUI\MainWindow.xaml.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

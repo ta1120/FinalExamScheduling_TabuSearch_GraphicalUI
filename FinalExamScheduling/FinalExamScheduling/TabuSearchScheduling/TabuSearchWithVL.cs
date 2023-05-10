@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using FinalExamScheduling.Model;
 
@@ -26,6 +27,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
         private int shuffleCounter;
         private double prevBestScore;
         private List<SolutionCandidate> neighbouringSolutions;
+        private CancellationToken currentCancallationToken;
 
         public TabuSearchWithVL(Context _ctx)
         {
@@ -40,12 +42,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
             neighbouringSolutions = new List<SolutionCandidate>();
         }
 
-        public SolutionCandidate Start(List<double> iterationalProgress)
+        public SolutionCandidate Start(List<double> iterationalProgress, CancellationToken cancellationToken)
         {
+            currentCancallationToken = cancellationToken;
+
             CandidateCostCalculator costCalculator = new CandidateCostCalculator(ctx);
 
             SolutionCandidate initialSolution = EvaluateSolution(new RandomInitialSolutionGenerator(ctx).GenerateInitialSolution());
-            Console.WriteLine("##### Initial solution generated\n");
+            //Console.WriteLine("##### Initial solution generated\n");
 
             currentSolution = initialSolution.Clone();
             bestSolution = initialSolution.Clone();
@@ -54,7 +58,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             SolutionCandidate selectedNeighbour = null;
 
-            Console.WriteLine(GetGlobalTerminationCriteriaState() ? "Temination criteria not met\n" : "Termination criteria met\n");
+            //Console.WriteLine(GetGlobalTerminationCriteriaState() ? "Temination criteria not met\n" : "Termination criteria met\n");
 
             while (GetGlobalTerminationCriteriaState())
             {
@@ -63,9 +67,16 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 do
                 {
+                    //This is a kind of relaxing added to the existing algorithm
+                    if(generationCycleCounter > TSParameters.MaxFailedNeighbourGenerations)
+                    {
+                        tabuList.DecreaseIterationsLeft();
+                        generationCycleCounter = 0;
+                    }
+
                     if (neighbouringSolutions.Count < 2)
                     {
-                        Console.WriteLine("### Neighbour generation started " + generationCycleCounter);
+                        //Console.WriteLine("### Neighbour generation started " + generationCycleCounter);
                         neighbouringSolutions = GenerateNeighbours(currentSolution);
                         generationCycleCounter++;
                     }
@@ -78,14 +89,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     if (bestSolution.score > selectedNeighbour.score)
                     {
                         bestSolution = EvaluateSolution(selectedNeighbour.Clone());
-                        Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable (BS)" : "Aspiration criteria met");
+                        //Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable (BS)" : "Aspiration criteria met");
                         break;
                     }
-                    Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable" : "Tabu " + neighbouringSolutions.Count);
+                    //Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable" : "Tabu " + neighbouringSolutions.Count);
                 }
                 while (!IsFeasibleSolution(selectedNeighbour) && GetGlobalTerminationCriteriaState());
 
-                Console.WriteLine("Score: " + selectedNeighbour.score);
+                //Console.WriteLine("Score: " + selectedNeighbour.score);
 
                 SolutionCandidate prevSolution = currentSolution;
                 currentSolution = selectedNeighbour;
@@ -102,7 +113,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 if (TSParameters.LogIterationalProgress) iterationalProgress.Add(currentSolution.score);
 
                 //ha üres a legjobb megoldás VL listája, akkor a jelenleg implementált követelmények maximálisan optimalizálva lettek
-                if (bestSolution.vl.Violations.Count == 0)
+                if (bestSolution.vl.violations.Count == 0)
                 {
                     return bestSolution;
                 }
@@ -134,20 +145,20 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public void IterationCountHandler(bool improvement)
         {
-            generationCycleCounter = 0;
-
             if (improvement)
             {
                 Console.WriteLine("#IMPROVEMENT");
                 idleIterCounter = 0;
+                
                 if(isTandemSearch) tandemIdleRunCounter = 0;
             }
             else
             {
-                Console.WriteLine("#NOBETTER " + idleIterCounter + ", " + tandemIdleRunCounter);
+                Console.WriteLine("#NOBETTER " + idleIterCounter + ", " + tandemIdleRunCounter + ", " + generationCycleCounter);
                 idleIterCounter++;
                 if (isTandemSearch) ManageTandemSwitches();
             }
+            generationCycleCounter = 0;
         }
 
         //REVIEW
@@ -160,9 +171,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
             &&
             (!TSParameters.AllowShuffleWhenStuck || shuffleCounter < TSParameters.MaxShuffles)
             &&
-            (generationCycleCounter < TSParameters.MaxFailedNeighbourGenerations)
-            &&
             (bestSolution.score > TSParameters.TargetScore)
+            &&
+            (!currentCancallationToken.IsCancellationRequested) //Checking whether cancellation is requested from the GUI
             ;
         }
 

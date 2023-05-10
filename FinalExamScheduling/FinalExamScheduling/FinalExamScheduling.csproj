@@ -89,7 +89,6 @@
     <Compile Include="TabuSearchScheduling\TS_Scores.cs" />
     <Compile Include="TabuSearchScheduling\SolutionCandidate.cs" />
     <Compile Include="TabuSearchScheduling\CandidateCostCalculator.cs" />
-    <Compile Include="TabuSearchScheduling\TabuSearchScheduler.cs" />
     <Compile Include="TabuSearchScheduling\TSParameters.cs" />
     <Compile Include="TabuSearchScheduling\ViolationList.cs" />
   </ItemGroup>
@@ -100,11 +99,9 @@
     <None Include="App.config" />
     <None Include="ClassDiagrams\AlgorithmClasses.cd" />
     <None Include="ClassDiagrams\DataModel.cd" />
-    <None Include="Input.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="ClassDiagrams\GUIElements.cd" />
+    <None Include="Input.xlsx" />
     <None Include="packages.config" />
-    <None Include="ClassDiagrams\TabuSearchClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="GraphicalUI\MainWindow.xaml">

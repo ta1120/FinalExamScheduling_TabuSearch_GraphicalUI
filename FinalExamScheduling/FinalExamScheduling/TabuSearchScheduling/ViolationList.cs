@@ -8,24 +8,24 @@ namespace FinalExamScheduling.TabuSearchScheduling
 {
     class ViolationList
     {
-        public List<KeyValuePair<string, string>> Violations;
+        public List<KeyValuePair<string, string>> violations;
 
-        private List<Func<Schedule, ViolationList>> ViolationFunctions;
+        private List<Func<Schedule, ViolationList>> violationFunctions;
 
         public ViolationList()
         {
-            Violations = new List<KeyValuePair<string, string>>();
+            violations = new List<KeyValuePair<string, string>>();
         }
 
         public void AddViolation(string param, string value)
         {
-            Violations.Add(new KeyValuePair<string, string>(param, value));
+            violations.Add(new KeyValuePair<string, string>(param, value));
         }
 
         public bool ContainsHardViolation()
         {
 
-            foreach(KeyValuePair<string, string> v in Violations)
+            foreach(KeyValuePair<string, string> v in violations)
             {
                 if (v.Key == "wrongExaminer" 
                     || v.Key == "studentDuplicated" 
@@ -45,14 +45,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
         public void AddViolation(KeyValuePair<string, string> v)
         {
-            Violations.Add(v);
+            violations.Add(v);
         }
 
         public void printViolations()
         {
-            if (this.Violations == null) return;
+            if (this.violations == null) return;
 
-            foreach (KeyValuePair<string, string> v in this.Violations)
+            foreach (KeyValuePair<string, string> v in this.violations)
             {
                 Console.WriteLine("Violation: " + v.Key + " - " + v.Value);
             }
@@ -64,7 +64,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             ViolationList vi = new ViolationList();
 
-            ViolationFunctions = new List<Func<Schedule, ViolationList>>()
+            violationFunctions = new List<Func<Schedule, ViolationList>>()
             {
                 GetWrongExaminerViolations,
                 GetStudentDuplicatedViolations,
@@ -85,7 +85,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 GetSupervisorNotPresidentViolations,
                 GetSupervisorNotSecretaryViolations,
-                GetExaminerNotPresidentViolations,
+                GetPresidentNotExaminerViolations,
                 
                 GetPresidentIsSecretaryViolations,
                 GetPresidentIsMemberViolations,
@@ -100,12 +100,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
            };
 
-            var tasks = ViolationFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
+            var tasks = violationFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
             Task.WaitAll(tasks);
             foreach (var task in tasks)
             {
                 ViolationList viRes = task.Result;
-                foreach (KeyValuePair<string, string> v in viRes.Violations)
+                foreach (KeyValuePair<string, string> v in viRes.violations)
                 {
                     vi.AddViolation(v);
                 }
@@ -428,16 +428,16 @@ namespace FinalExamScheduling.TabuSearchScheduling
             return vl;
         }
 
-        public ViolationList GetExaminerNotPresidentViolations(Schedule sch)
+        public ViolationList GetPresidentNotExaminerViolations(Schedule sch)
         {
             ViolationList vl = new ViolationList();
             if (!TSParameters.SolveExaminerNotPresident) return vl;
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 FinalExam fi = sch.FinalExams[i];
-                if ((fi.Examiner.Roles & Roles.President) == Roles.President && fi.Examiner != fi.President)
+                if (!fi.President.Name.Equals(fi.Examiner.Name) && fi.Student.ExamCourse.Instructors.Contains(fi.President))
                 {
-                    vl.AddViolation("examinerNotPresident", i.ToString() + ";" + fi.Examiner.Name);
+                    vl.AddViolation("presidentNotExaminer", i.ToString() + ";" + fi.President.Name);
                 }
             }
             return vl;

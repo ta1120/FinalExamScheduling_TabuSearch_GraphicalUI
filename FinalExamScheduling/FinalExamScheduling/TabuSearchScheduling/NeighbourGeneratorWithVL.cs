@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using FinalExamScheduling.Model;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using static FinalExamScheduling.TabuSearchScheduling.TSParameters;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
+    //Used for generating neighbouring solutions, based on Violation Lists
     class NeighbourGeneratorWithVL
     {
         private Context ctx;
@@ -18,15 +20,20 @@ namespace FinalExamScheduling.TabuSearchScheduling
             ctx = context;
         }
 
+        //This is method is called from the outside, to generate the neighbours. Takes the original candidate, and the preferred generation mode, returns an array of neighbours
         public SolutionCandidate[] GenerateNeighbours(SolutionCandidate candidate, string mode)
         {
+            //Number of candidates is defined in a global parameter
             int candidateCount = TSParameters.GeneratedCandidates;
             SolutionCandidate[] neighbours = new SolutionCandidate[candidateCount];
 
+            //Generating the neighbours
             for (int i = 0; candidateCount > i; i++)
             {
+                //Choosing a subset of violations to fix in the current a neighbour
                 ViolationList partialViolations = GetRandomViolationSubset(candidate.vl);
 
+                //Calling the desired version of the Fix method
                 if(mode.Equals("Random"))
                 {
                     neighbours[i] = FixViolations_Random(candidate.Clone(),partialViolations);
@@ -40,16 +47,20 @@ namespace FinalExamScheduling.TabuSearchScheduling
             return neighbours;
         }
 
+        //Randomly selecting a given number of violations from the passed list and returning them as a new list
         public ViolationList GetRandomViolationSubset(ViolationList violations)
         {
+            //The number of violations to select is defined in a global parameter
             int modCount = TSParameters.ViolationsToFixPerGeneration;
 
             int violationCount = violations.violations.Count;
 
+            //If more violations are to be selected than how many are available, return the original list
             if (modCount >= violationCount) return violations;
 
             ViolationList partialViolations  = new ViolationList();
 
+            //Going over all of the violations, using a random selection based decision function to pick out the number of violations
             foreach (KeyValuePair<string, string> v in violations.violations)
             {
                 if (1 > modCount) break;
@@ -71,18 +82,23 @@ namespace FinalExamScheduling.TabuSearchScheduling
         //Selection sampling method
         public bool RollForSelectionSampling(int itemsNeeded, int itemsLeft)
         {
-            Random rand = new Random();
+            System.Random rand = new System.Random();
             int num = rand.Next(itemsLeft);
 
             return itemsNeeded >= num;
         }
 
-        //TODO Review / Restructure
+
+        //This function will try to fix the given violations in the given candidate using a heuristic approach. The function is imperfect, and is to be rewrote in the next iteration of the software. 
         public SolutionCandidate FixViolations_Heuristic(SolutionCandidate candidate, ViolationList partialViolations) 
         {
-            Random rand = new Random();
+            System.Random rand = new System.Random();
+
+            //Going over each violation in the list
             foreach (KeyValuePair<string, string> v in partialViolations.violations)
             {
+                //Selecting the correct fix based on the Key part of the violation, and trying to fix the violation. Some violations are currently missing from the list.
+
                 if (v.Key.Equals("supervisorAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -101,6 +117,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[x].Supervisor = candidate.schedule.FinalExams[x].Student.Supervisor;
                     }
                 }
+
                 else if (v.Key.Equals("studentDuplicated"))
                 {
                     string[] data = v.Value.Split(';');
@@ -112,6 +129,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         if (currentIDCount == 0) missingID = currentIDCount;
                         else if (currentIDCount > 1) duplicatedID = currentIDCount;
                     }
+
                     if (!(duplicatedID == -1 || missingID == -1))
                     {
                         foreach (FinalExam fe in candidate.schedule.FinalExams)
@@ -124,6 +142,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         }
                     }
                 }
+
                 else if (v.Key.Equals("presidentAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -138,8 +157,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         }
                         candidate.schedule.FinalExams[index].President = ctx.Presidents[x];
                     }
-
                 }
+
                 else if (v.Key.Equals("secretaryAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -155,6 +174,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
                     }
                 }
+
                 else if (v.Key.Equals("wrongExaminer"))
                 {
                     string[] data = v.Value.Split(';');
@@ -172,6 +192,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         if (candidate.schedule.FinalExams[index].Student.ExamCourse.Instructors.Contains(newExaminer)) candidate.schedule.FinalExams[index].Examiner = newExaminer;
                     }
                 }
+
                 else if (v.Key.Equals("examinerAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -203,6 +224,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         else candidate.schedule.FinalExams[index].Examiner = ctx.Instructors[x];
                     }
                 }
+
                 else if (v.Key.Equals("memberAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -228,6 +250,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                     if (candidate.schedule.FinalExams[index - offset].President.Name.Equals(presidentName) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].President = ctx.GetInstructorByName(presidentName);
                 }
+
                 else if (v.Key.Equals("secretaryChange"))
                 {
                     string[] data = v.Value.Split(';');
@@ -254,6 +277,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
                     }
                 }
+
                 else if (v.Key.Equals("presidentIsMember") || v.Key.Equals("secretaryIsMember"))
                 {
                     string[] data = v.Value.Split(';');
@@ -284,6 +308,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].Supervisor.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].President = candidate.schedule.FinalExams[index].Supervisor;
                     }
+
                     else if (v.Key.Equals("supervisorNotSecretary"))
                     {
                         string[] val = v.Value.Split(';');
@@ -291,6 +316,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].Supervisor.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Secretary = candidate.schedule.FinalExams[index].Supervisor;
                     }
+
                     else if (v.Key.Equals("presidentNotExaminer"))
                     {
                         string[] val = v.Value.Split(';');
@@ -298,6 +324,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].President.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Examiner = candidate.schedule.FinalExams[index].President;
                     }
+
                     else if (v.Key.Equals("secretaryNotExaminer"))
                     {
                         string[] val = v.Value.Split(';');
@@ -305,6 +332,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].Secretary.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Examiner = candidate.schedule.FinalExams[index].Secretary;
                     }
+
                     else if (v.Key.Equals("memberNotExaminer"))
                     {
                         string[] val = v.Value.Split(';');
@@ -312,6 +340,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         string name = val[1];
                         if (candidate.schedule.FinalExams[index].Member.Name.Equals(name) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Examiner = candidate.schedule.FinalExams[index].Member;
                     }
+
                     else if (v.Key.Equals("supervisorNotExaminer"))
                     {
                         string[] val = v.Value.Split(';');
@@ -338,6 +367,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             candidate.schedule.FinalExams[index].President = candidate.schedule.FinalExams[index - 1].President;
                         }
                     }
+
                     else if (v.Key.Equals("secretaryChangeLong"))
                     {
                         string[] data = v.Value.Split(';');
@@ -350,20 +380,21 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     }
                 }
             }
-
             return candidate;
         }
 
-        //TODO Review / Restructure
+        //This function will try to fix the given violations in the given candidate using a random approach.The function is imperfect, and is to be rewrote in the next iteration of the software. 
         public SolutionCandidate FixViolations_Random(SolutionCandidate candidate, ViolationList partialViolations)
         {
-            Random rand = new Random();
+            System.Random rand = new System.Random();
 
             //Trying to fix soft violations only when there are no hard ones left or FixAllHardFirst option is off
             if (TSParameters.OptimizeSoftConstraints && (!partialViolations.ContainsHardViolation() || !TSParameters.FixAllHardFirst))
             {
                 foreach (KeyValuePair<string, string> v in partialViolations.violations)
                 {
+                    //Selecting the correct fix based on the Key part of the violation, and trying to fix the violation. Some violations are currently missing from the list.
+
                     if (v.Key.Equals("presidentWorkload"))
                     {
                         string[] data = v.Value.Split(';');
@@ -392,6 +423,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                         }
                     }
+
                     else if (v.Key.Equals("secretaryWorkload"))
                     {
                         string[] data = v.Value.Split(';');
@@ -420,6 +452,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                         }
                     }
+
                     else if (v.Key.Equals("memberWorkload"))
                     {
                         string[] data = v.Value.Split(';');
@@ -448,42 +481,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                             }
                         }
                     }
-                    /*
-                    else if (v.Key.Equals("presidentChangeLong"))
-                    {
-                        string[] data = v.Value.Split(';');
-                        int index = int.Parse(data[0]);
-                        string name = data[1];
-                        if (candidate.schedule.FinalExams[index - 1].President.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
-                        {
-                            int x = rand.Next(0, ctx.Presidents.Length);
-                            while (!ctx.Presidents[x].Availability[index])
-                            {
-                                x = rand.Next(0, ctx.Presidents.Length);
-                            }
-                            candidate.schedule.FinalExams[index].President = ctx.Presidents[x];
-                        }
-                    }
-                    else if (v.Key.Equals("secretaryChangeLong"))
-                    {
-                        string[] data = v.Value.Split(';');
-                        int index = int.Parse(data[0]);
-                        string name = data[1];
-                        if (candidate.schedule.FinalExams[index - 1].Secretary.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
-                        {
-                            int x = rand.Next(0, ctx.Secretaries.Length);
-                            while (!ctx.Secretaries[x].Availability[index])
-                            {
-                                x = rand.Next(0, ctx.Secretaries.Length);
-                            }
-                            candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
-                        }
-                    }
-                    */
                 }
             }
 
-            //Hard violations
+            //Trying to fix hard violations
             foreach (KeyValuePair<string, string> v in partialViolations.violations)
             {
                 if (v.Key.Equals("supervisorAvailability"))
@@ -504,6 +505,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[x].Supervisor = candidate.schedule.FinalExams[x].Student.Supervisor;
                     }
                 }
+
                 else if (v.Key.Equals("studentDuplicated"))
                 {
                     string[] data = v.Value.Split(';');
@@ -527,6 +529,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         }
                     }
                 }
+
                 else if (v.Key.Equals("presidentAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -543,6 +546,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     }
 
                 }
+
                 else if (v.Key.Equals("secretaryAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -558,6 +562,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
                     }
                 }
+
                 else if (v.Key.Equals("wrongExaminer"))
                 {
                     string[] data = v.Value.Split(';');
@@ -575,6 +580,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         if (candidate.schedule.FinalExams[index].Student.ExamCourse.Instructors.Contains(newExaminer)) candidate.schedule.FinalExams[index].Examiner = newExaminer;
                     }
                 }
+
                 else if (v.Key.Equals("examinerAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -587,6 +593,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[index].Examiner = ctx.Instructors[x];
                     }
                 }
+
                 else if (v.Key.Equals("memberAvailability"))
                 {
                     string[] data = v.Value.Split(';');
@@ -599,6 +606,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         candidate.schedule.FinalExams[index].Member = ctx.Members[x];
                     }
                 }
+
                 else if (v.Key.Equals("presidentChange"))
                 {
                     string[] data = v.Value.Split(';');
@@ -608,6 +616,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                     if (candidate.schedule.FinalExams[index - offset].President.Name.Equals(presidentName) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].President = ctx.GetInstructorByName(presidentName);
                 }
+
                 else if (v.Key.Equals("secretaryChange"))
                 {
                     string[] data = v.Value.Split(';');
@@ -617,6 +626,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                     if (candidate.schedule.FinalExams[index - offset].Secretary.Name.Equals(secretaryName) || !TSParameters.CheckViolationPersistance) candidate.schedule.FinalExams[index].Secretary = ctx.GetInstructorByName(secretaryName);
                 }
+
                 else if (v.Key.Equals("presidentIsSecretary"))
                 {
                     string[] data = v.Value.Split(';');
@@ -629,10 +639,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         {
                             x = rand.Next(0, ctx.Secretaries.Length);
                         }
-
                         candidate.schedule.FinalExams[index].Secretary = ctx.Secretaries[x];
                     }
                 }
+
                 else if (v.Key.Equals("presidentIsMember"))
                 {
                     string[] data = v.Value.Split(';');
@@ -645,10 +655,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         {
                             x = rand.Next(0, ctx.Members.Length);
                         }
-
                         candidate.schedule.FinalExams[index].Member = ctx.Members[x];
                     }
                 }
+
                 else if (v.Key.Equals("secretaryIsMember"))
                 {
                     string[] data = v.Value.Split(';');
@@ -661,7 +671,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                         {
                             x = rand.Next(0, ctx.Members.Length);
                         }
-
                         candidate.schedule.FinalExams[index].Member = ctx.Members[x];
                     }
                 }

@@ -6,16 +6,12 @@ using System.Threading.Tasks;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
+    //Based on code provided by Szilvia Erdős
     class CandidateCostCalculator
     {
-        /*
-         * 
-         * This class is the slightly altered version of the GeneticScheduling/SchedulingFitness class.
-         * 
-         */
-
         private Context ctx;
 
+        //The collection of cost functions
         private readonly List<Func<Schedule, double>> costFunctions;
 
 
@@ -67,11 +63,13 @@ namespace FinalExamScheduling.TabuSearchScheduling
            };
         }
 
+        //This will return the given points per constraints for a schedule (used in the file output)
         public double[] GetFinalScores(Schedule sch)
         {
             return costFunctions.Select(cf => cf(sch)).ToList().ToArray();
         }
 
+        //This will calculate the full cost for a schedule and set it in the score attribute of the schedule and also return it. Parallelization is used by dispatching each function as a separate task
         public double Evaluate(SolutionCandidate cand)
         {
             Schedule sch = cand.schedule;
@@ -84,11 +82,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
             {
                 score += (int)task.Result;
             }
-
             cand.score = score;
 
             return score;
         }
+
+        //Cost functions: Each following Get"ConstraintName"Score naming template. Each will take a Schedule, and return the scores (cost) for the constraint as a double type value
 
         public double GetWrongExaminerScore(Schedule sch)
         {
@@ -107,10 +106,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
             double score = 0;
             List<Student> studentBefore = new List<Student>();
             int[] count = new int[100];
+
             foreach (var fe in sch.FinalExams)
             {
                 count[fe.Student.Id]++;
             }
+
             for (int i = 0; i < 100; i++)
             {
                 if (count[i] > 1)
@@ -119,103 +120,82 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 }
             }
+
             return score;
         }
 
         public double GetPresidentNotAvailableScore(Schedule sch)
         {
             double score = 0;
+
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 if (sch.FinalExams[i].President.Availability[i] == false)
                 {
                     score += TS_Scores.PresidentNotAvailable;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i].PresidentComment += $"President not available: {TS_Scores.PresidentNotAvailable}\n";
-                        sch.Details[i].PresidentScore += TS_Scores.PresidentNotAvailable;
-                    }
                 }
             }
+
             return score;
         }
 
         public double GetSecretaryNotAvailableScore(Schedule sch)
         {
             double score = 0;
+
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 if (sch.FinalExams[i].Secretary.Availability[i] == false)
                 {
                     score += TS_Scores.SecretaryNotAvailable;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i].SecretaryComment += $"Secretary not available: {TS_Scores.SecretaryNotAvailable}\n";
-                        sch.Details[i].SecretaryScore += TS_Scores.SecretaryNotAvailable;
-                    }
                 }
             }
+
             return score;
         }
 
         public double GetExaminerNotAvailableScore(Schedule sch)
         {
             double score = 0;
+
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 if (sch.FinalExams[i].Examiner.Availability[i] == false)
                 {
                     score += TS_Scores.ExaminerNotAvailable;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i].ExaminerComment += $"Examiner not available: {TS_Scores.ExaminerNotAvailable}\n";
-                        sch.Details[i].ExaminerScore += TS_Scores.ExaminerNotAvailable;
-                    }
                 }
-
-
             }
+
             return score;
         }
 
         public double GetMemberNotAvailableScore(Schedule sch)
         {
             double score = 0;
+
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 if (sch.FinalExams[i].Member.Availability[i] == false)
                 {
                     score += TS_Scores.MemberNotAvailable;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i].MemberComment += $"Member not available: {TS_Scores.MemberNotAvailable}\n";
-                        sch.Details[i].MemberScore += TS_Scores.MemberNotAvailable;
-                    }
                 }
-
-
-
             }
+
             return score;
         }
 
         public double GetSupervisorNotAvailableScore(Schedule sch)
         {
             double score = 0;
+
             for (int i = 0; i < sch.FinalExams.Length; i++)
             {
                 if (sch.FinalExams[i].Supervisor.Availability[i] == false)
                 {
                     score += TS_Scores.SupervisorNotAvailable;
-                    if (ctx.FillDetails)
-                    {
-                        sch.Details[i].SupervisorComment += $"Supervisor not available: {TS_Scores.SupervisorNotAvailable}\n";
-                        sch.Details[i].SupervisorScore += TS_Scores.SupervisorNotAvailable;
-                    }
                 }
-
-
             }
+
             return score;
         }
 
@@ -242,6 +222,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     score += TS_Scores.PresidentChange;
                 }
             }
+
             return score;
         }
 
@@ -267,7 +248,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.SecretaryChange;
                 }
-
             }
 
             return score;
@@ -296,7 +276,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.PresidentWorkloadWorst;
                 }
-
             }
 
             return score;
@@ -317,7 +296,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (Instructor pres in ctx.Presidents)
             {
-
                 if (presidentWorkloads[Array.IndexOf(ctx.Presidents, pres)] < optimalWorkload * 0.7 && presidentWorkloads[Array.IndexOf(ctx.Presidents, pres)] >= optimalWorkload * 0.5)
                 {
                     score += TS_Scores.PresidentWorkloadWorse;
@@ -327,7 +305,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.PresidentWorkloadWorse;
                 }
-
             }
 
             return score;
@@ -343,12 +320,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 presidentWorkloads[Array.IndexOf(ctx.Presidents, fi.President)]++;
             }
 
-
             double optimalWorkload = 100 / ctx.Presidents.Length;
 
             foreach (Instructor pres in ctx.Presidents)
             {
-
                 if (presidentWorkloads[Array.IndexOf(ctx.Presidents, pres)] < optimalWorkload * 0.9 && presidentWorkloads[Array.IndexOf(ctx.Presidents, pres)] >= optimalWorkload * 0.7)
                 {
                     score += TS_Scores.PresidentWorkloadBad;
@@ -386,7 +361,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.SecretaryWorkloadWorst;
                 }
-
             }
 
             return score;
@@ -407,7 +381,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (Instructor secr in ctx.Secretaries)
             {
-
                 if (secretaryWorkloads[Array.IndexOf(ctx.Secretaries, secr)] < optimalWorkload * 0.7 && secretaryWorkloads[Array.IndexOf(ctx.Secretaries, secr)] >= optimalWorkload * 0.5)
                 {
                     score += TS_Scores.SecretaryWorkloadWorse;
@@ -417,7 +390,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.SecretaryWorkloadWorse;
                 }
-
             }
 
             return score;
@@ -438,7 +410,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (Instructor secr in ctx.Secretaries)
             {
-
                 if (secretaryWorkloads[Array.IndexOf(ctx.Secretaries, secr)] < optimalWorkload * 0.9 && secretaryWorkloads[Array.IndexOf(ctx.Secretaries, secr)] >= optimalWorkload * 0.7)
                 {
                     score += TS_Scores.SecretaryWorkloadBad;
@@ -476,7 +447,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.MemberWorkloadWorst;
                 }
-
             }
 
             return score;
@@ -497,7 +467,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (Instructor memb in ctx.Members)
             {
-
                 if (memberWorkloads[Array.IndexOf(ctx.Members, memb)] < optimalWorkload * 0.7 && memberWorkloads[Array.IndexOf(ctx.Members, memb)] >= optimalWorkload * 0.5)
                 {
                     score += TS_Scores.MemberWorkloadWorse;
@@ -507,7 +476,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 {
                     score += TS_Scores.MemberWorkloadWorse;
                 }
-
             }
 
             return score;
@@ -527,7 +495,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             foreach (Instructor memb in ctx.Members)
             {
-
                 if (memberWorkloads[Array.IndexOf(ctx.Members, memb)] < optimalWorkload * 0.9 && memberWorkloads[Array.IndexOf(ctx.Members, memb)] >= optimalWorkload * 0.7)
                 {
                     score += TS_Scores.MemberWorkloadBad;
@@ -538,12 +505,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     score += TS_Scores.MemberWorkloadBad;
                 }
             }
+
             return score;
         }
 
         public double GetSupervisorNotPresidentScore(Schedule sch)
         {
             double score = 0;
+
             foreach (var fi in sch.FinalExams)
             {
                 if (((fi.Supervisor.Roles & Roles.President) == Roles.President && fi.Supervisor != fi.President) && fi.Supervisor != fi.Secretary && fi.Supervisor != fi.Member)
@@ -551,12 +520,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     score += TS_Scores.SupervisorNotPresident;
                 }
             }
+
             return score;
         }
 
         public double GetSupervisorNotSecretaryScore(Schedule sch)
         {
             double score = 0;
+
             foreach (var fi in sch.FinalExams)
             {
                 if (((fi.Supervisor.Roles & Roles.Secretary) == Roles.Secretary && fi.Supervisor != fi.Secretary) && fi.Supervisor != fi.President && fi.Supervisor != fi.Member)
@@ -564,12 +535,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     score += TS_Scores.SupervisorNotSecretary;
                 }
             }
+
             return score;
         }
 
         public double GetPresidentNotExaminerScore(Schedule sch)
         {
             double score = 0;
+
             foreach (var fi in sch.FinalExams)
             {
                 if (!fi.President.Name.Equals(fi.Examiner.Name) && fi.Student.ExamCourse.Instructors.Contains(fi.President))
@@ -577,6 +550,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     score += TS_Scores.PresidentNotExaminer;
                 }
             }
+
             return score;
         }
         
@@ -689,14 +663,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     changed = false;
                     ctr = 1;
                     currentPresident = schedule.FinalExams[i].President;
-                    
                 }
                 else
                 {
                     ctr++;
                     if (!schedule.FinalExams[i].President.Name.Equals(currentPresident.Name)) changed = true;
                 }
-
             }
 
             return score;
@@ -722,12 +694,9 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     ctr++;
                     if (!schedule.FinalExams[i].Secretary.Name.Equals(currentSecretary.Name)) changed = true;
                 }
-
             }
+
             return score;
         }
-
-
-
     }
 }

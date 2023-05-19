@@ -2,25 +2,18 @@
 
 namespace FinalExamScheduling.Model
 {
+    //Based on code provided by Szilvia Erdős
+    //An object representing a final exam
     public class FinalExam : Entity
     {
         public Student Student = null;
-
-
         public Instructor Supervisor = null;
-
-
         public Instructor President = null;
-
-
         public Instructor Secretary = null;
-
-
         public Instructor Member = null;
-
-
         public Instructor Examiner = null;
 
+        //Used for copying an object
         public FinalExam Clone()
         {
             return new FinalExam
@@ -34,6 +27,7 @@ namespace FinalExamScheduling.Model
             };
         }
 
+        //Will compare the received exam to the one it is called on, returns true, when the exams have only identical people scheduled
         public bool IsEqualExam(FinalExam exam)
         {
             if (
@@ -52,20 +46,5 @@ namespace FinalExamScheduling.Model
             
             return false;
         }
-
-        public string toString()
-        {
-            string fe = "";
-            fe += ("Student: " + Student.Name);
-            fe += (";President: " + President.Name);
-            fe += (";Supervisor: " + Supervisor.Name);
-            fe += (";Secretary: " + Secretary.Name);
-            fe += (";Member: " + Member.Name);
-            fe += (";Examiner: " + Examiner.Name);
-
-            return fe;
-        }
-
-        public void setStudent(Student s) { Student = s; }
     }
 }

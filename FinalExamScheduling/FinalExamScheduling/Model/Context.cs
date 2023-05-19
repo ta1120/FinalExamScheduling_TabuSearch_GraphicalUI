@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace FinalExamScheduling.Model
 {
+    //Based on code provided by Szilvia Erdős
+    //Used for storing data from the input files
     public class Context
     {
 
@@ -26,9 +28,7 @@ namespace FinalExamScheduling.Model
             FillIDs(Students);
             FillIDs(Instructors);
             FillIDs(Courses);
-            //FillIDs(Presidents);
-            //FillIDs(Secretaries);
-            //FillIDs(Members);
+            
             Presidents = Instructors.Where(i => i.Roles.HasFlag(Roles.President)).ToArray();
             Secretaries = Instructors.Where(i => i.Roles.HasFlag(Roles.Secretary)).ToArray();
             Members = Instructors.Where(i => i.Roles.HasFlag(Roles.Member)).ToArray();

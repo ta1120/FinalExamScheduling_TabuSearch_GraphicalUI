@@ -1,11 +1,7 @@
 ﻿namespace FinalExamScheduling.TabuSearchScheduling
 {
-    /*
-     * 
-     * This class was partly copied from the GeneticScheduling folder.
-     * 
-     */
-
+    //This class was originally copied from the solution by Szilvia Erdős, but since then it has been expanded with a few constraints
+    //The class contains the penalty points for the violation of each contraint
     static class TS_Scores
     {
         public const double WrongExaminer = 2000;
@@ -46,7 +42,5 @@
         public const double MemberNotExaminer = 1;
 
         public const double WrongSupervisor = 2000;
-
-        //public const double InstructorChangeInBlock = 2;
     }
 }

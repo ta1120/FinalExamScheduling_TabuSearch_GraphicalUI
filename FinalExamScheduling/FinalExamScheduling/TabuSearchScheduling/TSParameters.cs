@@ -1,10 +1,11 @@
 ﻿namespace FinalExamScheduling.TabuSearchScheduling
 {
+    //This class contains the "global" parameters used by the algorithm
     static class TSParameters
     {
-        //################################
-        //Parameters available to the user
-        //################################
+        //######################################
+        //Parameters available to the user (GUI)
+        //######################################
 
         //Switches
         public static bool AllowShuffleWhenStuck = false;
@@ -18,7 +19,7 @@
         //Mode of neighbour generation: Random/Heuristic/Tandem
         public static string Mode = "Tandem";
 
-        //Tabu parameters
+        //Tabu parameters for both modes are defined in nested classes
         public class Random
         {
             public static int TabuLifeIterations = 5;

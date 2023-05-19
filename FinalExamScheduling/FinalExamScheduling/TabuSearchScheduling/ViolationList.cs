@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
+    //This is used for storing and calculating contraint violations per solution
     class ViolationList
     {
+        //The list of the violations (stored as string based key-value pairs)
         public List<KeyValuePair<string, string>> violations;
 
+        //The collection of the violation functions
         private List<Func<Schedule, ViolationList>> violationFunctions;
 
         public ViolationList()
@@ -53,14 +56,22 @@ namespace FinalExamScheduling.TabuSearchScheduling
            };
         }
 
+        //Adding new violations by 2 string values
         public void AddViolation(string param, string value)
         {
             violations.Add(new KeyValuePair<string, string>(param, value));
         }
 
+        //Adding existing violations (eg. from another list)
+        public void AddViolation(KeyValuePair<string, string> v)
+        {
+            violations.Add(v);
+        }
+
+        //This will return true, if the list contains any elements that have any of the listed strings as keys. 
+        //Used for determining the ACCEPTIBILITY/FEASABILITY of a solution, if it returns FALSE, the solution does not contain any hard violations and is therefore ACCEPTABLE as an actual schedule
         public bool ContainsHardViolation()
         {
-
             foreach(KeyValuePair<string, string> v in violations)
             {
                 if (v.Key == "wrongExaminer" 
@@ -73,27 +84,14 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     || v.Key == "presidentIsSecretary" 
                     || v.Key == "presidentIsMember" 
                     || v.Key == "secretaryIsMember" 
-                    || v.Key == "wrongSupervisor") return true;
+                    || v.Key == "wrongSupervisor") 
+                    return true;
             }
 
             return false;
         }
 
-        public void AddViolation(KeyValuePair<string, string> v)
-        {
-            violations.Add(v);
-        }
-
-        public void printViolations()
-        {
-            if (this.violations == null) return;
-
-            foreach (KeyValuePair<string, string> v in this.violations)
-            {
-                Console.WriteLine("Violation: " + v.Key + " - " + v.Value);
-            }
-        }
-
+        //Used for calculating the violation list of a solution (cand). The evaulation is parallelized usings Tasks. The ViolationLists generated are merged into one list and returned.
         public ViolationList Evaluate(SolutionCandidate cand)
         {
             Schedule sch = cand.schedule;
@@ -113,6 +111,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             return vi;
         }
+
+        //Violation functions: Each following Get"ConstraintName"Violations naming template. Each will take a Schedule, and return a ViolationList
 
         public ViolationList GetWrongExaminerViolations(Schedule sch)
         {

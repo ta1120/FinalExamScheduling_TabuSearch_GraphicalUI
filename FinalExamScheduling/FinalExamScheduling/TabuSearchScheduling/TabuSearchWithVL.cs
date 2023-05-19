@@ -8,16 +8,22 @@ using FinalExamScheduling.Model;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
+    //This class contains the implementation of the core of the algorithm
     class TabuSearchWithVL
     {
+        //Storing data from the input
         private Context ctx;
 
+        //Storing a tabu list
         private TabuList tabuList;
 
+        //Storing the current solution (s)
         private SolutionCandidate currentSolution;
 
+        //Storing the best solution so far (bs)
         private SolutionCandidate bestSolution;
 
+        //The algorithm has many control variables, these are explained in the documentation
         private int examCount;
         private bool isNextModeRandom = false;
         private bool isTandemSearch;
@@ -28,11 +34,15 @@ namespace FinalExamScheduling.TabuSearchScheduling
         private double prevBestScore;
         private bool shuffleRequested;
         private List<SolutionCandidate> neighbouringSolutions;
+
+        //The algorithm receives a cancellation token when started, the state is checked with the other termination criteria
         private CancellationToken currentCancallationToken;
 
         public TabuSearchWithVL(Context _ctx)
         {
             ctx = _ctx;
+
+            //Initialization
             examCount = ctx.Students.Length;
             isNextModeRandom = false;
             isTandemSearch = TSParameters.Mode.Equals("Tandem");
@@ -44,16 +54,17 @@ namespace FinalExamScheduling.TabuSearchScheduling
             shuffleRequested = false;   
         }
 
+        //This method is implementing the algorithm itself. It follows the flowchart and the pseudocode in the documentation.
         public SolutionCandidate Start(List<double> iterationalProgress, CancellationToken cancellationToken)
         {
             currentCancallationToken = cancellationToken;
 
             CandidateCostCalculator costCalculator = new CandidateCostCalculator(ctx);
 
+            //Generating initial solution based on the context
             SolutionCandidate initialSolution = EvaluateSolution(RandomInitialSolutionGenerator.GenerateInitialSolution(ctx));
 
-            //Console.WriteLine("##### Initial solution generated\n");
-
+            //Setup
             currentSolution = initialSolution.Clone();
             bestSolution = initialSolution.Clone();
             tabuList = new TabuList();
@@ -61,82 +72,94 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             SolutionCandidate selectedNeighbour = null;
 
+            //Running iterations until termination criteria is met
             while (GetGlobalTerminationCriteriaState())
             {
+                //Evaluating the current solution
                 currentSolution.vl = new ViolationList().Evaluate(currentSolution);
-                //Console.WriteLine("Current solution violations: " + currentSolution.VL.Violations.Count +  "\n");
 
+                //Generating neighbours, until a feasible candidate is found or termination is requested
                 do
                 {
-                    //This is a kind of relaxing added to the existing algorithm
+                    //This is a kind of relaxing added to the existing algorithm. 
+                    //When a certain number of iterations is reached without successfull generation, the current tabu elements lifecycle will be shortened (after some time they will be disposed of)
                     if(generationCycleCounter > TSParameters.MaxFailedNeighbourGenerations)
                     {
                         tabuList.DecreaseIterationsLeft();
                         generationCycleCounter = 0;
                     }
 
+                    //Checking whether we have run out of possible candidates, if so, regenerating
                     if (neighbouringSolutions.Count < 2)
                     {
-                        //Console.WriteLine("### Neighbour generation started " + generationCycleCounter);
                         neighbouringSolutions = GenerateNeighbours(currentSolution);
                         generationCycleCounter++;
                     }
 
+                    //Removing the previous neighbour (tabu neighbour) from the list
                     else neighbouringSolutions.Remove(selectedNeighbour);
 
-
+                    //Selecting and evaluating the next best candidate
                     selectedNeighbour = EvaluateSolution(SelectBestCandidate());
 
+                    //Checking the aspiration criteria: if the selected neighbour is better than the current best solution, it will be the new current and best solution
                     if (bestSolution.score > selectedNeighbour.score)
                     {
                         bestSolution = EvaluateSolution(selectedNeighbour.Clone());
-                        //Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable (BS)" : "Aspiration criteria met");
                         break;
                     }
-                    //Console.WriteLine(IsFeasibleSolution(selectedNeighbour) ? "Acceptable" : "Tabu " + neighbouringSolutions.Count);
                 }
                 while (!IsFeasibleSolution(selectedNeighbour) && GetGlobalTerminationCriteriaState());
 
-                //Console.WriteLine("Score: " + selectedNeighbour.score);
-
+                //Storing the previous solution to expand the tabu list later
                 SolutionCandidate prevSolution = currentSolution;
+
+                //Updating the current solution with the best feasible neighbour (s = s')
                 currentSolution = selectedNeighbour;
 
+                //Handling the itaration counters
                 IterationCountHandler(prevBestScore > bestSolution.score);
                 prevBestScore = bestSolution.score;
 
+                //Clearing the neighbours for the next iteration
                 neighbouringSolutions.Clear();
 
+                //Handling lifecycle for tabu elements 
                 tabuList.DecreaseIterationsLeft();
 
+                //Adding the new tabu steps to the list based on the diifferences of the 2 solutions
                 ExpandTabuList(prevSolution, currentSolution);
 
+                //Adding the current iterations score to the log
                 if (TSParameters.LogIterationalProgress) iterationalProgress.Add(currentSolution.score);
 
-                //ha üres a legjobb megoldás VL listája, akkor a jelenleg implementált követelmények maximálisan optimalizálva lettek
+                //Checking whether there are any violations left (otherwise the solution would be fully optimized, and the algorithm should quit)
                 if (bestSolution.vl.violations.Count == 0)
                 {
                     return bestSolution;
                 }
 
-                Console.WriteLine("Current best score: " + bestSolution.score);
-
                 //When stuck and shuffling is activated, shuffle the students in the current solution
                 if(shuffleRequested && TSParameters.AllowShuffleWhenStuck && TSParameters.MaxShuffles > shuffleCounter)
                 {
-                    Console.WriteLine("Shuffling... " + shuffleCounter);
                     currentSolution =  ShuffleStudents(currentSolution);
                 }
 
             }
+
+            //Returning the evaluated version of the best found solution
             return EvaluateSolution(bestSolution);
         }
 
+        //This method is responsible for managing the switches in Tandem mode
         public void ManageTandemSwitches()
         {
+            //Checking whether idle iteration limit is reached
             if(idleIterCounter >= TSParameters.AllowedIdleIterations)
             {
+                //Changing mode
                 isNextModeRandom = !isNextModeRandom;
+                tabuList.ChangeListParameter_Mode(isNextModeRandom ? "Random" : "Heuristic");
                 idleIterCounter = 0;
 
                 tandemIdleRunCounter++;
@@ -144,6 +167,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 if (tandemIdleRunCounter >= TSParameters.TandemIdleSwitches) shuffleRequested = true;            }
         }
 
+        //This will fully evaluate and return the passed solution (cost + violations)
         public SolutionCandidate EvaluateSolution(SolutionCandidate solution)
         {
             CandidateCostCalculator calc = new CandidateCostCalculator(ctx);
@@ -152,18 +176,17 @@ namespace FinalExamScheduling.TabuSearchScheduling
             return solution;
         }
 
+        //Handling the iteration counters based on progress in the last iteration. Improvement will reset the counters.
         public void IterationCountHandler(bool improvement)
         {
             if (improvement)
             {
-                Console.WriteLine("#IMPROVEMENT");
                 idleIterCounter = 0;
                 
                 if(isTandemSearch) tandemIdleRunCounter = 0;
             }
             else
             {
-                Console.WriteLine("#NOBETTER " + idleIterCounter + ", " + tandemIdleRunCounter + ", " + generationCycleCounter);
                 idleIterCounter++;
                 if (isTandemSearch) ManageTandemSwitches();
                 else
@@ -174,7 +197,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             generationCycleCounter = 0;
         }
 
-        //REVIEW
+        //Checking the global termination criteria
         public bool GetGlobalTerminationCriteriaState() //Termination will be initiated when this returns false
         {
             return
@@ -190,6 +213,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             ;
         }
 
+        //Used for initiating the neighbour generation process. Selecting the current mode for neighbour generation. 
         public List<SolutionCandidate> GenerateNeighbours(SolutionCandidate current)
         {
             if (isTandemSearch)
@@ -208,6 +232,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             else return GetNeighbours(current, TSParameters.Mode);
         }
 
+        //Calling the neighbour generator with the determined parameters
         public List<SolutionCandidate> GetNeighbours(SolutionCandidate current, string mode)
         {
             NeighbourGeneratorWithVL neighbourGenerator = new NeighbourGeneratorWithVL(ctx);
@@ -218,9 +243,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             return neighbours.ToList<SolutionCandidate>();
         }
-
-        /*################################################################################*/
-        /*Rewrite from here*/
 
         //Exchange a given percentage of students with other ones, to possibly unstuck
         public SolutionCandidate ShuffleStudents(SolutionCandidate current)
@@ -255,8 +277,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
         {
             CandidateCostCalculator calc = new CandidateCostCalculator(ctx);
             SolutionCandidate best = null;
-
-            //Console.WriteLine(neighbouringSolutions.Count == 0 ? "Elfogytak az s":"Van meg s " + neighbouringSolutions.Count );
 
             foreach (SolutionCandidate candidate in neighbouringSolutions)
             {

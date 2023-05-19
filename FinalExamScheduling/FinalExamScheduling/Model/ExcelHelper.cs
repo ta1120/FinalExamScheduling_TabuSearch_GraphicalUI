@@ -10,22 +10,26 @@ using System.Reflection;
 
 namespace FinalExamScheduling.Model
 {
-
+    //Based on code provided by Szilvia Erdős
+    //Used for handling the file I/O
     public static class ExcelHelper
     {
-        //Slightly modified version of the Write() function
+        //Slightly modified version of the original Write() function
         public static void WriteTS(string p_strPath, Schedule sch, Context context, double[] finalScores, List<double> iterationalProgress, string elapsed)
         {
             using (ExcelPackage xlPackage_new = new ExcelPackage())
             {
+                //Creating the sheets
                 ExcelWorksheet ws_scheduling = xlPackage_new.Workbook.Worksheets.Add("Scheduling");
                 ExcelWorksheet ws_info = xlPackage_new.Workbook.Worksheets.Add("Information");
                 ExcelWorksheet ws_workload = xlPackage_new.Workbook.Worksheets.Add("Workloads");
 
+
+                //Filling up the Scheduling sheet with the generated schedule
                 #region Scheduling
 
+                //Creating and formatting the headers
                 ws_scheduling.Cells[1, 1].Value = "Student";
-
                 ws_scheduling.Cells[1, 2].Value = "Supervisor";
                 ws_scheduling.Cells[1, 3].Value = "President";
                 ws_scheduling.Cells[1, 4].Value = "Secretary";
@@ -41,6 +45,7 @@ namespace FinalExamScheduling.Model
                     cell.Style.Font.Size = 14;
                 }
 
+                //Writing out the exams row by row
                 int i = 2;
                 foreach (FinalExam exam in sch.FinalExams)
                 {
@@ -57,9 +62,8 @@ namespace FinalExamScheduling.Model
                     ws_scheduling.Cells[i, 6].Value = exam.Examiner.Name;
 
                     ws_scheduling.Cells[i, 7].Value = exam.Student.ExamCourse.Name;
-                    ws_scheduling.Cells[i, 8].Value = exam.Id;
 
-
+                    //Day separator formatting
                     if (i % 10 == 1)
                     {
                         for (int j = 1; j <= 7; j++)
@@ -68,6 +72,8 @@ namespace FinalExamScheduling.Model
                             cell.Style.Border.Bottom.Style = ExcelBorderStyle.Medium;
                         }
                     }
+
+                    //Block separator formatting
                     if (i % 5 == 1 && i % 10 != 1)
                     {
                         for (int j = 1; j <= 7; j++)
@@ -84,13 +90,15 @@ namespace FinalExamScheduling.Model
 
                 #endregion
 
-
+                //Filling up the Information sheet
                 #region Information
 
                 if (TSParameters.GetInfo)
                 {
 
                     ws_info.Cells[1, 1].Value = "Scores";
+
+                    //Writing out the constraint names, points per violation and given points
                     int row = 2;
                     foreach (FieldInfo info in typeof(TS_Scores).GetFields().Where(x => x.IsStatic && x.IsLiteral))
                     {
@@ -103,9 +111,12 @@ namespace FinalExamScheduling.Model
                     }
                     row++;
 
+                    //Adding the elapsed time
                     ws_info.Cells[row, 1].Value = "Time:";
                     ws_info.Cells[row, 2].Value = elapsed;
 
+
+                    //Writing out the iterational progress (necessary for the line chart, not meant to be read directly)
                     if (TSParameters.LogIterationalProgress)
                     {
                         int startingCol = 5;
@@ -121,6 +132,7 @@ namespace FinalExamScheduling.Model
                         }
                         rows--;
 
+                        //Creating the line chart for the iterational score progress
                         ExcelLineChart lineChart = ws_info.Drawings.AddChart("lineChart", eChartType.Line) as ExcelLineChart;
                         lineChart.Title.Text = "Iterational Score Progress";
 
@@ -129,21 +141,18 @@ namespace FinalExamScheduling.Model
 
                         lineChart.Series.Add(scores, iter);
 
-                        //lineChart.Series[0].Header = ws_info.Cells["A1"].Text;
-
                         lineChart.Legend.Remove();
 
                         lineChart.SetSize(1450, 700);
 
                         lineChart.SetPosition(0, 0, 3, 0);
                     }
-
                 }
 
                 ws_info.Cells.AutoFitColumns();
                 #endregion
 
-
+                //Filling up the Workload sheet
                 #region Workload
 
                 int[] presidentWorkloads = new int[context.Presidents.Length];
@@ -158,6 +167,7 @@ namespace FinalExamScheduling.Model
                     memberWorkloads[Array.IndexOf(context.Members, fi.Member)]++;
                 }
 
+                //Headers
                 ws_workload.Cells[1, 1].Value = "Presidents";
                 ws_workload.Cells[1, 2].Value = "Nr of exams";
                 ws_workload.Cells[1, 3].Value = "Secretaries";
@@ -165,6 +175,8 @@ namespace FinalExamScheduling.Model
                 ws_workload.Cells[1, 5].Value = "Members";
                 ws_workload.Cells[1, 6].Value = "Nr of exams";
 
+
+                //Actual workload
                 for (int j = 0; j < context.Presidents.Length; j++)
                 {
                     ws_workload.Cells[j + 2, 1].Value = context.Presidents[j].Name;
@@ -191,11 +203,11 @@ namespace FinalExamScheduling.Model
 
                 #endregion
 
-
+                //The filenames are quite unique (containing time, points) this should never actually happen
                 if (File.Exists(p_strPath))
                     File.Delete(p_strPath);
 
-
+                //Creating the Excel file
                 FileStream objFileStrm = File.Create(p_strPath);
                 objFileStrm.Close();
 
@@ -204,6 +216,7 @@ namespace FinalExamScheduling.Model
             }
         }
 
+        //Unmodified, original function for reading the input and creating a Context object
         public static Context Read(FileInfo existingFile)
         {
             var context = new Context();
@@ -289,7 +302,6 @@ namespace FinalExamScheduling.Model
                     students.Add(new Student
                     {
                         Name = ws_students.Cells[iRow, 1].Text,
-                        Neptun = ws_students.Cells[iRow, 2].Text,
                         Supervisor = instructors.Find(item => item.Name.Equals(ws_students.Cells[iRow, 3].Text)),
                         ExamCourse = courses.Find(item => item.CourseCode.Equals(ws_students.Cells[iRow, 5].Text)),
 

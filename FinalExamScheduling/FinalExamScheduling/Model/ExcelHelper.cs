@@ -40,7 +40,6 @@ namespace FinalExamScheduling.Model
                     cell.Style.Font.Bold = true;
                     cell.Style.Font.Size = 14;
                 }
-                string author = "Tóth Ádám László";
 
                 int i = 2;
                 foreach (FinalExam exam in sch.FinalExams)

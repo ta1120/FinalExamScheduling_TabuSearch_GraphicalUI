@@ -3,16 +3,9 @@ using System;
 
 namespace FinalExamScheduling.TabuSearchScheduling
 {
-    class RandomInitialSolutionGenerator
+    static class RandomInitialSolutionGenerator
     {
-        private Context ctx;
-
-        public RandomInitialSolutionGenerator(Context context)
-        {
-            ctx = context;
-        }
-
-        public SolutionCandidate GenerateInitialSolution()
+        public static SolutionCandidate GenerateInitialSolution(Context ctx)
         {
             Random rnd = new Random();
 

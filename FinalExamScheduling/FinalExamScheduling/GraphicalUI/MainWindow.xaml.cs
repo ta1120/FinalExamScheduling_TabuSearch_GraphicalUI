@@ -50,7 +50,6 @@ namespace FinalExamScheduling
         static void Main(string[] args)
         {
             InitializeWindows();
-            System.Environment.Exit(0);
         }
 
         //TODO Restructure if enough time left
@@ -141,7 +140,7 @@ namespace FinalExamScheduling
                         string elapsed1 = watch.Elapsed.ToString();
                         string extraInfo1 = ("_" + TSParameters.Mode + "_" + penaltyScore);
 
-                        ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo1 + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed1);
+                        ExcelHelper.WriteTS(@"Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo1 + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed1);
                     }
                 }
             }
@@ -159,7 +158,7 @@ namespace FinalExamScheduling
             string extraInfo = ("_" + TSParameters.Mode + "_" + penaltyScore);
 
             //File output
-            ExcelHelper.WriteTS(@"..\..\Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed); 
+            ExcelHelper.WriteTS(@"Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed); 
         }
 
         private void ResetAfterRun()
@@ -173,27 +172,21 @@ namespace FinalExamScheduling
 
         private Thread CreateRunnerThread()
         {
-            Console.WriteLine("Creating algorithm thread...");
             return new Thread(t =>
             {
-                try 
-                {
-                    RunTabuSearch();
-                }
-                finally
-                {
-                    this.Dispatcher.Invoke(new Action(() => ResetAfterRun()));
-                }
+                try { RunTabuSearch(); }
+
+                finally { this.Dispatcher.Invoke(new Action(() => ResetAfterRun())); }
             })
             { IsBackground = true };
         }
 
         /*
-         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
          * 
          * From here on, the class only contains event handlers for the GUI controls
          * 
-         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
          */
 
         private void Run_Click(object sender, EventArgs e)
@@ -205,7 +198,6 @@ namespace FinalExamScheduling
             if (algorithmRunning)
             {
                 cancellationTokenSource.Cancel();
-                
 
                 algorithmThread = CreateRunnerThread();
             }
@@ -227,10 +219,7 @@ namespace FinalExamScheduling
             if (algorithmRunning)
             {
                 cancellationTokenSource.Cancel();
-                
             }
-            ResetAfterRun();
-            runButton.IsEnabled = true;
         }
         private void Abort_Click(object sender, EventArgs e)
         {

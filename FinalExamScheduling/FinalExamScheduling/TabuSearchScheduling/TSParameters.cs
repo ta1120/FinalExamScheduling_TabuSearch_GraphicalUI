@@ -2,6 +2,9 @@
 {
     static class TSParameters
     {
+        //################################
+        //Parameters available to the user
+        //################################
 
         //Switches
         public static bool AllowShuffleWhenStuck = false;
@@ -9,10 +12,6 @@
         public static bool OptimizeSoftConstraints = false;
 
         public static bool RestartUntilTargetReached = true;
-
-        public const bool LogIterationalProgress = true;
-
-        public static bool CheckViolationPersistance = true;
 
         public static bool FixAllHardFirst = true;
 
@@ -22,43 +21,53 @@
         //Tabu parameters
         public class Random
         {
-            public static int TabuLifeIterations = 5; //15
+            public static int TabuLifeIterations = 5;
 
-            public static int TabuListLength = 1; //40
+            public static int TabuListLength = 1; 
         }
 
         public class Heuristic
         {
-            public static int TabuLifeIterations = 1; //10
+            public static int TabuLifeIterations = 1;
 
-            public static int TabuListLength = 1; //3
+            public static int TabuListLength = 1;
         }
 
-        //Other parameters
+        //Other, numeric parameters
 
         public static int ViolationsToFixPerGeneration = 50;
 
-        public const int ExamBlockLength = 5;
-
-        public static int WriteOutLimit = 60; //If scores under this are reached, the results will be written out to file. Set to negative value to write all results to file
+        public static int WriteOutLimit = 60; 
 
         public static int MaxShuffles = 1;
 
         public static int ShufflePercentage = 20;
 
-        public static int GeneratedCandidates = 15; //25
+        public static int GeneratedCandidates = 15; 
 
-        public static int AllowedIdleIterations = 10; //10
+        public static int AllowedIdleIterations = 10; 
 
-        public static double TargetScore = 40; //40 is the best reachable score for the original input file
+        public static double TargetScore = 40; 
+
+        public static int MaxFailedNeighbourGenerations = 5; 
+
+        public static int TandemIdleSwitches = 5;
+
+        /*
+        * ##########################################
+        * Parameters for testing during developement
+        * ##########################################
+        */
+
+        public const bool LogIterationalProgress = true;
 
         public const bool GetInfo = true;
 
-        public static int MaxFailedNeighbourGenerations = 5; //3
+        public const int ExamBlockLength = 5;
 
-        public static int TandemIdleSwitches = 5; //1
+        public static bool CheckViolationPersistance = true;
 
-        //Optimalization switches for distinct constraints
+        //Optimalization switches for distinct constraints, used for testing purposes only
         public const bool SolveWrongExaminer = true;
         public const bool SolveStudentDuplicated = true;
         public const bool SolvePresidentAvailability = true;

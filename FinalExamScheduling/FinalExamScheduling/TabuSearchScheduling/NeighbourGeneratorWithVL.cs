@@ -210,10 +210,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                     string name = data[1];
                     if (candidate.schedule.FinalExams[index].Member.Name.Equals(name) || !TSParameters.CheckViolationPersistance)
                     {
-                        int x = rand.Next(0, ctx.Members.Length);
-                        while (!ctx.Members[x].Availability[index])
+                        int x = 0;
+                        while (!ctx.Members[x].Availability[index] && x < (ctx.Members.Length - 1))
                         {
-                            x = rand.Next(0, ctx.Members.Length);
+                            x++;
                         }
                         candidate.schedule.FinalExams[index].Member = ctx.Members[x];
                     }
@@ -359,7 +359,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
         {
             Random rand = new Random();
 
-            //Trying to fix soft violations only when there are no hard ones left
+            //Trying to fix soft violations only when there are no hard ones left or FixAllHardFirst option is off
             if (TSParameters.OptimizeSoftConstraints && (!partialViolations.ContainsHardViolation() || !TSParameters.FixAllHardFirst))
             {
                 foreach (KeyValuePair<string, string> v in partialViolations.violations)

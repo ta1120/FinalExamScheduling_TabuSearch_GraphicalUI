@@ -78,8 +78,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             int score = 0;
 
-            sch.Details = new FinalExamDetail[100];
-
             var tasks = costFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
             Task.WaitAll(tasks);
             foreach (var task in tasks)
@@ -714,7 +712,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             {
                 if (ctr > 10)
                 {
-                    if(changed) score = TS_Scores.SecretaryChangeLong;
+                    if(changed) score += TS_Scores.SecretaryChangeLong;
                     changed = false;
                     ctr = 1;
                     currentSecretary = schedule.FinalExams[i].Secretary;
@@ -726,7 +724,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 }
 
             }
-
             return score;
         }
 

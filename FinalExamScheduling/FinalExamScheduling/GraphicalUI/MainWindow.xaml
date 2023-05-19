@@ -205,7 +205,7 @@
                                 VerticalAlignment="Center" 
                                 Margin="15,0,0,0" 
                                 TextWrapping="Wrap" 
-                                Text="1500" 
+                                Text="500" 
                                 Grid.Row="1" 
                                 Width="120" 
                                 TextChanged="OnWriteoutLimitChanged"/>
@@ -437,7 +437,7 @@
                             <TextBox 
                                 x:Name="targetScoreInput"
                                 TextWrapping="Wrap" 
-                                Text="40"
+                                Text="300"
                                 Width="120" 
                                 TextChanged="OnTargetScoreChanged"
                                 Grid.Row="9"

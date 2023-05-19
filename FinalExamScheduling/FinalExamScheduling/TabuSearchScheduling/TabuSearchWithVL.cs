@@ -26,6 +26,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
         private int tandemIdleRunCounter;
         private int shuffleCounter;
         private double prevBestScore;
+        private bool shuffleRequested;
         private List<SolutionCandidate> neighbouringSolutions;
         private CancellationToken currentCancallationToken;
 
@@ -40,6 +41,7 @@ namespace FinalExamScheduling.TabuSearchScheduling
             tandemIdleRunCounter = 0;
             shuffleCounter = 0;
             neighbouringSolutions = new List<SolutionCandidate>();
+            shuffleRequested = false;   
         }
 
         public SolutionCandidate Start(List<double> iterationalProgress, CancellationToken cancellationToken)
@@ -48,7 +50,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
             CandidateCostCalculator costCalculator = new CandidateCostCalculator(ctx);
 
-            SolutionCandidate initialSolution = EvaluateSolution(new RandomInitialSolutionGenerator(ctx).GenerateInitialSolution());
+            SolutionCandidate initialSolution = EvaluateSolution(RandomInitialSolutionGenerator.GenerateInitialSolution(ctx));
+
             //Console.WriteLine("##### Initial solution generated\n");
 
             currentSolution = initialSolution.Clone();
@@ -57,8 +60,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
             prevBestScore = currentSolution.score;
 
             SolutionCandidate selectedNeighbour = null;
-
-            //Console.WriteLine(GetGlobalTerminationCriteriaState() ? "Temination criteria not met\n" : "Termination criteria met\n");
 
             while (GetGlobalTerminationCriteriaState())
             {
@@ -120,8 +121,15 @@ namespace FinalExamScheduling.TabuSearchScheduling
 
                 Console.WriteLine("Current best score: " + bestSolution.score);
 
+                //When stuck and shuffling is activated, shuffle the students in the current solution
+                if(shuffleRequested && TSParameters.AllowShuffleWhenStuck && TSParameters.MaxShuffles > shuffleCounter)
+                {
+                    Console.WriteLine("Shuffling... " + shuffleCounter);
+                    currentSolution =  ShuffleStudents(currentSolution);
+                }
+
             }
-            return bestSolution;
+            return EvaluateSolution(bestSolution);
         }
 
         public void ManageTandemSwitches()
@@ -132,7 +140,8 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 idleIterCounter = 0;
 
                 tandemIdleRunCounter++;
-            }
+
+                if (tandemIdleRunCounter >= TSParameters.TandemIdleSwitches) shuffleRequested = true;            }
         }
 
         public SolutionCandidate EvaluateSolution(SolutionCandidate solution)
@@ -157,6 +166,10 @@ namespace FinalExamScheduling.TabuSearchScheduling
                 Console.WriteLine("#NOBETTER " + idleIterCounter + ", " + tandemIdleRunCounter + ", " + generationCycleCounter);
                 idleIterCounter++;
                 if (isTandemSearch) ManageTandemSwitches();
+                else
+                {
+                    if(idleIterCounter >= TSParameters.AllowedIdleIterations) shuffleRequested = true;
+                }
             }
             generationCycleCounter = 0;
         }
@@ -212,6 +225,12 @@ namespace FinalExamScheduling.TabuSearchScheduling
         //Exchange a given percentage of students with other ones, to possibly unstuck
         public SolutionCandidate ShuffleStudents(SolutionCandidate current)
         {
+            //Resetting variables first
+            shuffleRequested = false;
+            idleIterCounter = 0;
+            if (isTandemSearch) tandemIdleRunCounter = 0;
+            shuffleCounter++;
+
             SolutionCandidate shuffled = current.Clone();
             int shuffleCount = current.schedule.FinalExams.Length * (TSParameters.ShufflePercentage / 100);
             Random rand = new Random();

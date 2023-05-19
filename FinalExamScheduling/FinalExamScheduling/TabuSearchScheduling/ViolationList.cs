@@ -15,6 +15,42 @@ namespace FinalExamScheduling.TabuSearchScheduling
         public ViolationList()
         {
             violations = new List<KeyValuePair<string, string>>();
+
+            violationFunctions = new List<Func<Schedule, ViolationList>>()
+            {
+                GetWrongExaminerViolations,
+                GetStudentDuplicatedViolations,
+                GetPresidentNotAvailableViolations,
+                GetSecretaryNotAvailableViolations,
+                GetExaminerNotAvailableViolations,
+                GetMemberNotAvailableViolations,
+                GetSupervisorNotAvailableViolations,
+
+                GetPresidentChangeViolations,
+                GetSecretaryChangeViolations,
+                GetPresidentChangeLongViolations,
+                GetSecretaryChangeLongViolations,
+
+                GetPresidentWorkloadViolations,
+                GetSecretaryWorkloadViolations,
+                GetMemberWorkloadViolations,
+
+                GetSupervisorNotPresidentViolations,
+                GetSupervisorNotSecretaryViolations,
+                GetPresidentNotExaminerViolations,
+
+                GetPresidentIsSecretaryViolations,
+                GetPresidentIsMemberViolations,
+                GetSecretaryIsMemberViolations,
+
+                GetSecretaryNotExaminerViolations,
+                GetMemberNotExaminerViolations,
+                GetSupervisorNotMemberViolations,
+                GetSupervisorNotExaminerViolations,
+
+                GetWrongSupervisorViolations
+
+           };
         }
 
         public void AddViolation(string param, string value)
@@ -63,42 +99,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
             Schedule sch = cand.schedule;
 
             ViolationList vi = new ViolationList();
-
-            violationFunctions = new List<Func<Schedule, ViolationList>>()
-            {
-                GetWrongExaminerViolations,
-                GetStudentDuplicatedViolations,
-                GetPresidentNotAvailableViolations,
-                GetSecretaryNotAvailableViolations,
-                GetExaminerNotAvailableViolations,
-                GetMemberNotAvailableViolations,
-                GetSupervisorNotAvailableViolations,
-
-                GetPresidentChangeViolations,
-                GetSecretaryChangeViolations,
-                GetPresidentChangeLongViolations,
-                GetSecretaryChangeLongViolations,
-
-                GetPresidentWorkloadViolations,
-                GetSecretaryWorkloadViolations,
-                GetMemberWorkloadViolations,
-
-                GetSupervisorNotPresidentViolations,
-                GetSupervisorNotSecretaryViolations,
-                GetPresidentNotExaminerViolations,
-                
-                GetPresidentIsSecretaryViolations,
-                GetPresidentIsMemberViolations,
-                GetSecretaryIsMemberViolations,
-                
-                GetSecretaryNotExaminerViolations,
-                GetMemberNotExaminerViolations,
-                GetSupervisorNotMemberViolations,
-                GetSupervisorNotExaminerViolations,
-                
-                GetWrongSupervisorViolations
-
-           };
 
             var tasks = violationFunctions.Select(cf => Task.Run(() => cf(sch))).ToArray();
             Task.WaitAll(tasks);

@@ -25,10 +25,7 @@ R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\F
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.exe
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\FinalExamScheduling_TabuSearch_GraphicalUI.pdb
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\EPPlus.dll
-R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\NCalc.dll
-R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\SmartThreadPool.dll
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\EPPlus.xml
-R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\bin\Debug\SmartThreadPool.pdb
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.AssemblyReference.cache
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.SuggestedBindingRedirects.cache
 R:\BME-VIK\felev7\beo_szakdolgozat\implementation\schedule\FinalExamScheduling\FinalExamScheduling\obj\Debug\FinalExamScheduling.csproj.CoreCompileInputs.cache

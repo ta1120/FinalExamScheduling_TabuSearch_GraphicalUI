@@ -10,7 +10,7 @@
         //Switches
         public static bool AllowShuffleWhenStuck = false;
 
-        public static bool OptimizeSoftConstraints = false;
+        public static bool OptimizeSoftConstraints = true;
 
         public static bool RestartUntilTargetReached = true;
 
@@ -22,37 +22,37 @@
         //Tabu parameters for both modes are defined in nested classes
         public class Random
         {
-            public static int TabuLifeIterations = 5;
+            public static int TabuLifeIterations = 10;
 
-            public static int TabuListLength = 1; 
+            public static int TabuListLength = 10; 
         }
 
         public class Heuristic
         {
-            public static int TabuLifeIterations = 1;
+            public static int TabuLifeIterations = 5;
 
-            public static int TabuListLength = 1;
+            public static int TabuListLength = 5;
         }
 
         //Other, numeric parameters
 
         public static int ViolationsToFixPerGeneration = 50;
 
-        public static int WriteOutLimit = 60; 
+        public static int WriteOutLimit = -1; 
 
         public static int MaxShuffles = 1;
 
         public static int ShufflePercentage = 20;
 
-        public static int GeneratedCandidates = 15; 
+        public static int GeneratedCandidates = 20; 
 
-        public static int AllowedIdleIterations = 10; 
+        public static int AllowedIdleIterations = 20; 
 
-        public static double TargetScore = 40; 
+        public static double TargetScore = 600; 
 
-        public static int MaxFailedNeighbourGenerations = 5; 
+        public static int MaxFailedNeighbourGenerations = 1; 
 
-        public static int TandemIdleSwitches = 5;
+        public static int TandemIdleSwitches = 50;
 
         /*
         * ##########################################

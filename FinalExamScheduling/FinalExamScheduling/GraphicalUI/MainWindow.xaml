@@ -216,6 +216,7 @@
                                 Grid.Row="2" 
                                 VerticalAlignment="Center" 
                                 Margin="15,0,0,0" 
+                                IsChecked="True"
                                 Checked="OnWriteOutCBChecked" 
                                 Unchecked="OnWriteOutCBUnchecked"/>
                         </Grid>
@@ -386,7 +387,7 @@
                             <TextBox 
                                 x:Name="allowedIdleIterationsInput" 
                                 TextWrapping="Wrap" 
-                                Text="10" 
+                                Text="20" 
                                 Width="120" 
                                 TextChanged="OnIdleIterationsChanged"
                                 Grid.Row="3"
@@ -403,7 +404,7 @@
                             <TextBox 
                                 x:Name="maxFailedNeighbourGenerationsInput" 
                                 TextWrapping="Wrap" 
-                                Text="5" 
+                                Text="1" 
                                 Width="120" 
                                 TextChanged="OnMaxFailedGenerationsChanged"
                                 Grid.Row="5"
@@ -420,7 +421,7 @@
                             <TextBox 
                                 x:Name="tandemIdleSwitchesInput" 
                                 TextWrapping="Wrap" 
-                                Text="10"
+                                Text="50"
                                 Width="120" 
                                 TextChanged="OnTandemSwitchesChanged"
                                 Grid.Row="7"
@@ -437,7 +438,7 @@
                             <TextBox 
                                 x:Name="targetScoreInput"
                                 TextWrapping="Wrap" 
-                                Text="300"
+                                Text="600"
                                 Width="120" 
                                 TextChanged="OnTargetScoreChanged"
                                 Grid.Row="9"

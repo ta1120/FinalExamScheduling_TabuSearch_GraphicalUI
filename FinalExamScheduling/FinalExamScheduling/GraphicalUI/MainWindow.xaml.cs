@@ -17,54 +17,59 @@ using FinalExamScheduling.TabuSearchScheduling;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using System.Runtime.Remoting.Contexts;
+using Context = FinalExamScheduling.Model.Context;
 
 namespace FinalExamScheduling
 {
     
+    //This class is realizing a window, that provides the GUI for the program. Contains code for conrolling the GUI, and creating and running an algorithm thread
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            TSParameters.Mode = "Tandem";
+            TSParameters.Mode = "Tandem"; //This is the default mode
         }
 
-        private TabuSearchWithVL algorithm;
-
+        //Cancellation tokens are used for manually terminating a run at a safe point
         private CancellationTokenSource cancellationTokenSource;
 
+        //Used for storing the current state
         bool algorithmRunning = false;
 
+        //Points to the current algorithm thread
         Thread algorithmThread;
 
         public static Application WinApp { get; private set; }
         public static Window  _MainWindow { get; private set; }
 
+        //Instantiating and running the MainWindow
         static void InitializeWindows()
         {
             WinApp = new Application();
             WinApp.Run(_MainWindow = new MainWindow());
         }
 
+        //The main 
         [STAThread]
         static void Main(string[] args)
         {
             InitializeWindows();
         }
 
-        //TODO Restructure if enough time left
+        //Running the algorithm until any termination criteria is met
         public void RunTabuSearch()
         {
             //Initialization
-            resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("# " + (DateTime.Now.ToString()))));
-            resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add("Mode: " + (TSParameters.Mode))));
+            this.Dispatcher.Invoke(new Action(() => this.DisplayNewRun()));
+
+            //Variables used for calculating stats
             List<double> results = new List<double>();
-            double sum = 0;
-            double feasibleScheduleCount = 0;
+            int feasibleScheduleCount = 0;
 
-            var watch = Stopwatch.StartNew();
-
-            //Reading input
+            //Trying to read the input, when unsuccessfull, the program will notify the user, and the method will quit
             FileInfo existingFile = new FileInfo("Input.xlsx");
             if (!existingFile.Exists) 
             {
@@ -74,93 +79,76 @@ namespace FinalExamScheduling
             var context = ExcelHelper.Read(existingFile);
             context.Init();
 
+            //Instantiation of the algorithm runner class
+            TabuSearchWithVL algorithm = new TabuSearchWithVL(context);
 
-            algorithm = new TabuSearchWithVL(context);
-
+            //Instantiating a cancellation token for every new run (disposed of at the end of run)
             cancellationTokenSource = new CancellationTokenSource();
             CancellationToken currentToken = cancellationTokenSource.Token;
 
+            //Used for storing the iterational progress for the file output
             List<double> iterationProgress = new List<double>();
+
+            //The time of each run is measured using a stopwatch
+            var watch = Stopwatch.StartNew();
 
             //Running the algorithm
             SolutionCandidate solution = algorithm.Start(iterationProgress, currentToken);
 
+            //Administrating run results when it is finished
             watch.Stop();
-
+            string elapsed = watch.Elapsed.ToString();
             Schedule resultSchedule = solution.schedule;
             double penaltyScore = solution.score;
-
-            results.Add(solution.score);
+            results.Add(penaltyScore);
             if (!solution.vl.ContainsHardViolation()) feasibleScheduleCount++;
 
             //Displaying the result score
-            resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
-            resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
-            resultBox.Dispatcher.Invoke(new Action(() => resultBox.ScrollIntoView(resultBox.SelectedItem)));
+            this.Dispatcher.Invoke(new Action(() => this.DisplayResult(penaltyScore)));
+            //Displaying the stats
+            this.Dispatcher.Invoke(new Action(() => this.DisplayStats(results, feasibleScheduleCount)));
 
-            //If parameter is set, re-running the algorithm
+            //Writing the schedule to Excel
+            WriteToExcel(penaltyScore, resultSchedule, context, iterationProgress, elapsed);
+
+            //If restart parameter is set, re-running the algorithm until target points are reached
             if (TSParameters.RestartUntilTargetReached)
             {
                 while (solution.score > TSParameters.TargetScore && !currentToken.IsCancellationRequested)
                 {
-                    //Quick reset
+                    //Reset for new run
                     iterationProgress.Clear();
-                    watch.Restart();
-                    algorithm = new TabuSearchWithVL(context);
 
+                    //Resetting control variables for a new run
+                    algorithm.InitializeAlgorithm();
+
+                    //Restarting stopwatch
+                    watch.Restart();
+
+                    //Running the algorithm again
                     solution = algorithm.Start(iterationProgress,currentToken);
                     
+                    //Administration of result
                     watch.Stop();
-
+                    elapsed = watch.Elapsed.ToString();
                     resultSchedule = solution.schedule;
                     penaltyScore = solution.score;
-
                     results.Add(solution.score);
                     if (!solution.vl.ContainsHardViolation()) feasibleScheduleCount++;
 
-                    //Calculating statistics every 5 run
-                    if (results.Count % 5 == 0) 
-                    {
-                        sum = 0;
-                        results.ForEach(s => sum += s);
-                        minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
-                        double avg = Math.Round((sum / results.Count), 2);
-                        avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avg + " points"));
-                        feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount * 100 / results.Count), 1) + "%"));
-                    }
+                    //Calculating statistics every time
+                    this.Dispatcher.Invoke(new Action(() => this.DisplayStats(results,feasibleScheduleCount)));
 
                     //Displaying the result score
-                    resultBox.Dispatcher.Invoke(new Action(() => resultBox.Items.Add(penaltyScore + " points")));
-                    resultBox.Dispatcher.Invoke(new Action(() => resultBox.SelectedIndex = resultBox.Items.Count - 1));
-                    resultBox.Dispatcher.Invoke(new Action(() => resultBox.ScrollIntoView(resultBox.SelectedItem)));
+                    this.Dispatcher.Invoke(new Action(() => this.DisplayResult(penaltyScore)));
 
-                    //Conditional file output
-                    if (penaltyScore < TSParameters.WriteOutLimit || TSParameters.WriteOutLimit < 0)
-                    {
-                        string elapsed1 = watch.Elapsed.ToString();
-                        string extraInfo1 = ("_" + TSParameters.Mode + "_" + penaltyScore);
-
-                        ExcelHelper.WriteTS(@"Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo1 + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed1);
-                    }
+                    //Writing the new results to Excel
+                    WriteToExcel(penaltyScore, resultSchedule, context, iterationProgress, elapsed);
                 }
             }
-
-            string elapsed = watch.Elapsed.ToString();
-
-            //Calculating statistics
-            sum = 0;
-            results.ForEach(s => sum += s);
-            minLabel.Dispatcher.Invoke(new Action(() => minLabel.Content = results.Min<double>() + " points"));
-            double avgFinal = Math.Round((sum / results.Count), 2);
-            avgLabel.Dispatcher.Invoke(new Action(() => avgLabel.Content = avgFinal + " points"));
-            feasiblePercentageLabel.Dispatcher.Invoke(new Action(() => feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round((feasibleScheduleCount * 100 / results.Count), 1) + "%"));
-
-            string extraInfo = ("_" + TSParameters.Mode + "_" + penaltyScore);
-
-            //File output
-            ExcelHelper.WriteTS(@"Results\Done_TS_" + DateTime.Now.ToString("yyyyMMdd_HHmm") + extraInfo + ".xlsx", resultSchedule, context, new CandidateCostCalculator(context).GetFinalScores(resultSchedule), iterationProgress, elapsed); 
         }
 
+        //Resetting the GUI controls and control variables when the thread is finished
         private void ResetAfterRun()
         {
             algorithmRunning = false;
@@ -168,8 +156,11 @@ namespace FinalExamScheduling
             runButton.IsEnabled = true;
             parameterBox.IsEnabled = true;
             cancellationTokenSource.Dispose();
+            resultBox.Items.Add("@ " + (DateTime.Now.ToString()));
+            resultBox.Items.Add("--Run finished");
         }
 
+        //Creating the thread to run the algorithm
         private Thread CreateRunnerThread()
         {
             return new Thread(t =>
@@ -181,50 +172,95 @@ namespace FinalExamScheduling
             { IsBackground = true };
         }
 
-        /*
-         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-         * 
-         * From here on, the class only contains event handlers for the GUI controls
-         * 
-         * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-         */
+        //When the global parameters allow it, writing the result schedule to Excel
+        private void WriteToExcel(double penaltyScore, Schedule result, Context ctx, List<double> iterationProgress, string time)
+        {
+            if (!(penaltyScore < TSParameters.WriteOutLimit || TSParameters.WriteOutLimit < 0)) return;
 
+            string path = @"Results\";
+            string fileNamePrefix = "Done_TS";
+            string dateTime = DateTime.Now.ToString("yyyyMMdd_HHmm");
+            string runInfo = (TSParameters.Mode + "_" + penaltyScore);
+            string format = ".xlsx";
+            string fullFilePath = path + fileNamePrefix + "_" + dateTime + "_" + runInfo + format;
+            double[] finalScoresPerConstraint = new CandidateCostCalculator(ctx).GetFinalScores(result);
+
+            ExcelHelper.WriteTS(fullFilePath, result, ctx, finalScoresPerConstraint, iterationProgress, time);
+        }
+
+        //This will display the date, time and mode in the result box at the start of a run
+        private void DisplayNewRun()
+        {
+            resultBox.Items.Add("# " + (DateTime.Now.ToString()));
+            resultBox.Items.Add("Scheduling started...");
+            resultBox.Items.Add("Mode: " + (TSParameters.Mode));
+            resultBox.Items.Add("Please wait...");
+        }
+
+        //This will add the passed result to the result box, and make sure, it is scrolled into view
+        private void DisplayResult(double result)
+        {
+            resultBox.Items.Add(result + " points");
+            resultBox.SelectedIndex = resultBox.Items.Count - 1;
+            resultBox.ScrollIntoView(resultBox.SelectedItem);
+        }
+
+        //This will update the statistics section on the page
+        private void DisplayStats(List<double> results, int feasibleScheduleCount)
+        {
+            double sum = 0;
+            results.ForEach(s => sum += s);
+            minLabel.Content = results.Min<double>() + " points";
+            double avgFinal = Math.Round((sum / results.Count), 2);
+            avgLabel.Content = avgFinal + " points";
+            feasiblePercentageLabel.Content = feasibleScheduleCount + "/" + results.Count + " " + Math.Round(((double)feasibleScheduleCount * 100 / results.Count), 1) + "%";
+        }
+
+        //# # # # # # # # # # # # # # # # # # # #
+        //# Event handlers for the GUI controls #
+        //# # # # # # # # # # # # # # # # # # # #         
+
+        //Event handler for the Run button - Creating and running the algorithm thread, handling other GUI controls
         private void Run_Click(object sender, EventArgs e)
         {
             avgLabel.Content = "-";
             minLabel.Content = "-";
             feasiblePercentageLabel.Content = "-";
 
+            //This should not actually happen during a run because ResetAfterRun is called in the "finally" block of the thread, safeguard
             if (algorithmRunning)
             {
                 cancellationTokenSource.Cancel();
 
                 algorithmThread = CreateRunnerThread();
             }
+            
             else
             {
                 algorithmRunning = true;
                 algorithmThread = CreateRunnerThread();
             }
 
+            //Handling GUI controls
             abortButton.IsEnabled = true;
             runButton.IsEnabled = false;
             parameterBox.IsEnabled = false;
 
+            //Starting the thread
             algorithmThread.Start();
         }
-
-        private void Abort()
+        
+        //Event handler for the Abort button - Requesting cancellation through the token. The disposal of the token is automatically done when the thread is finished
+        private void Abort_Click(object sender, EventArgs e)
         {
             if (algorithmRunning)
             {
                 cancellationTokenSource.Cancel();
             }
         }
-        private void Abort_Click(object sender, EventArgs e)
-        {
-            Abort();
-        }
+
+        //Parameter control handlers...
+
         private void OnModeSelectorChanged(object sender, SelectionChangedEventArgs e)
         {
             TSParameters.Mode = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string;
@@ -234,16 +270,19 @@ namespace FinalExamScheduling
         {
             TSParameters.OptimizeSoftConstraints = false;
         }
+
         private void OnSoftConstCBChecked(object sender, RoutedEventArgs e)
         {
             TSParameters.OptimizeSoftConstraints = true;
         }
+
         private void OnShuffleCBUnchecked(object sender, RoutedEventArgs e)
         {
             maxShufflesInput.IsEnabled = false;
             shufflePercentageInput.IsEnabled = false;
             TSParameters.AllowShuffleWhenStuck = false;
         }
+
         private void OnShuffleCBChecked(object sender, RoutedEventArgs e)
         {
             maxShufflesInput.IsEnabled = true;
@@ -251,33 +290,41 @@ namespace FinalExamScheduling
             TSParameters.AllowShuffleWhenStuck = true;
             SetShufflePercentage();
         }
+
         private void OnRestartCBUnchecked(object sender, RoutedEventArgs e)
         {
             TSParameters.RestartUntilTargetReached = false;
         }
+
         private void OnRestartCBChecked(object sender, RoutedEventArgs e)
         {
             TSParameters.RestartUntilTargetReached = true;
         }
+
         private void OnWriteOutCBUnchecked(object sender, RoutedEventArgs e)
         {
             writeOutLimitInput.IsEnabled = true;
             SetWriteOutLimit();
         }
+
         private void OnWriteOutCBChecked(object sender, RoutedEventArgs e)
         {
             writeOutLimitInput.IsEnabled = false;
             TSParameters.WriteOutLimit = -1;
         }
+
         private void OnHardFirstCBUnchecked(object sender, RoutedEventArgs e)
         {
             TSParameters.FixAllHardFirst = false;
         }
+
         private void OnHardFirstCBChecked(object sender, RoutedEventArgs e)
         {
             TSParameters.FixAllHardFirst = true;
         }
+
         private void OnWriteoutLimitChanged(object sender, TextChangedEventArgs args) { SetWriteOutLimit(); }
+
         private void SetWriteOutLimit()
         {
             int limit;
@@ -288,62 +335,74 @@ namespace FinalExamScheduling
             } 
             else TSParameters.WriteOutLimit = 0;
         }
+
         private void OnShufflePercentageChanged(object sender, TextChangedEventArgs args) { SetShufflePercentage(); }
+
         private void OnMaxShufflesChanged(object sender, TextChangedEventArgs args) { SetShuffleCount(); }
+
         private void SetShufflePercentage()
         {
             int percentage;
             if (int.TryParse(shufflePercentageInput.Text, out percentage)) TSParameters.ShufflePercentage = percentage;
             else TSParameters.WriteOutLimit = 0;
         }
+
         private void SetShuffleCount()
         {
             int count;
             if (int.TryParse(maxShufflesInput.Text, out count)) TSParameters.MaxShuffles = count;
             else TSParameters.MaxShuffles = 1;
         }
+
         private void OnGeneratedCandidatesChanged(object sender, TextChangedEventArgs args) 
         {
             int n;
             if (int.TryParse(generatedCandidatesInput.Text, out n)) TSParameters.GeneratedCandidates = n;
             else TSParameters.GeneratedCandidates = 10;
         }
+
         private void OnIdleIterationsChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(allowedIdleIterationsInput.Text, out n)) TSParameters.AllowedIdleIterations = n;
             else TSParameters.AllowedIdleIterations = 10;
         }
+
         private void OnMaxFailedGenerationsChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(maxFailedNeighbourGenerationsInput.Text, out n)) TSParameters.MaxFailedNeighbourGenerations = n;
             else TSParameters.MaxFailedNeighbourGenerations = 5;
         }
+
         private void OnTandemSwitchesChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(tandemIdleSwitchesInput.Text, out n)) TSParameters.TandemIdleSwitches = n;
             else TSParameters.TandemIdleSwitches = 5;
         }
+
         private void OnTargetScoreChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(targetScoreInput.Text, out n)) TSParameters.TargetScore = n;
             else TSParameters.TargetScore = 0;
         }
+
         private void OnRandomTTLChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(randomTTLInput.Text, out n)) TSParameters.Random.TabuLifeIterations = n;
             else TSParameters.Random.TabuLifeIterations = 1;
         }
+
         private void OnRandomListLengthChanged(object sender, TextChangedEventArgs args)
         {
             int n;
             if (int.TryParse(randomTabuListLengthInput.Text, out n)) TSParameters.Random.TabuListLength = n;
             else TSParameters.Random.TabuListLength = 1;
         }
+
         private void OnHeuristicTTLChanged(object sender, TextChangedEventArgs args)
         {
             int n;
@@ -356,6 +415,7 @@ namespace FinalExamScheduling
             if (int.TryParse(heuristicTabuListLengthInput.Text, out n)) TSParameters.Heuristic.TabuListLength = n;
             else TSParameters.Heuristic.TabuListLength = 1;
         }
+
         private void OnViolationFixCountChanged(object sender, TextChangedEventArgs args)
         {
             int n;

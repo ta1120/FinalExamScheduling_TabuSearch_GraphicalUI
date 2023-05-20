@@ -24,7 +24,6 @@ namespace FinalExamScheduling.TabuSearchScheduling
         private SolutionCandidate bestSolution;
 
         //The algorithm has many control variables, these are explained in the documentation
-        private int examCount;
         private bool isNextModeRandom = false;
         private bool isTandemSearch;
         private int generationCycleCounter;
@@ -35,23 +34,27 @@ namespace FinalExamScheduling.TabuSearchScheduling
         private bool shuffleRequested;
         private List<SolutionCandidate> neighbouringSolutions;
 
-        //The algorithm receives a cancellation token when started, the state is checked with the other termination criteria
+        //The algorithm receives a cancellation token when started, the state of this is checked with the other termination criteria
         private CancellationToken currentCancallationToken;
 
-        public TabuSearchWithVL(Context _ctx)
+        //Initialization
+        public void InitializeAlgorithm()
         {
-            ctx = _ctx;
-
-            //Initialization
-            examCount = ctx.Students.Length;
             isNextModeRandom = false;
             isTandemSearch = TSParameters.Mode.Equals("Tandem");
             generationCycleCounter = 0;
             idleIterCounter = 0;
             tandemIdleRunCounter = 0;
             shuffleCounter = 0;
+            prevBestScore = 0;
             neighbouringSolutions = new List<SolutionCandidate>();
-            shuffleRequested = false;   
+            shuffleRequested = false;
+        }
+
+        public TabuSearchWithVL(Context _ctx)
+        {
+            ctx = _ctx;
+            InitializeAlgorithm();
         }
 
         //This method is implementing the algorithm itself. It follows the flowchart and the pseudocode in the documentation.
